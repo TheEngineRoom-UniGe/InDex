@@ -1,2 +1,2 @@
-# InDex
-Codes Related to Index Project
+# InDex_Glove
+Codes Related to InDex Project Glove
