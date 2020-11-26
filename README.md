@@ -9,3 +9,8 @@ https://dl.espressif.com/dl/package_esp32_index.json
 
 Next goto Tools --> board --> boards manager , and search for ESP32 and install it 
 
+The MPU9250 9 axis IMU library, was based on the :
+https://github.com/kriswiner/MPU9250 library
+
+
+
