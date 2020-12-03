@@ -6,6 +6,8 @@ The code is an arduino code.
 To add the ESP32 board to arduino you should do the following: 
 In arduino IDE, goto file ---> preferences ---> additional boards manager url, and add the following: 
 https://dl.espressif.com/dl/package_esp32_index.json
+or this one: 
+http://download.dfrobot.top/FireBeetle/package_esp32_index.json
 
 Next goto Tools --> board --> boards manager , and search for ESP32 and install it 
 
