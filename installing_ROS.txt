@@ -1,0 +1,46 @@
+rosserial installation 
+
+$ source /opt/ros/noetic/setup.bash
+
+Let's create and build a catkin workspace:
+
+$ mkdir -p ~/catkin_ws/src
+$ cd ~/catkin_ws/
+$ catkin_make
+
+
+
+mkdir ~/esp
+cd ~/esp
+git clone -b v3.3 --recursive https://github.com/espressif/esp-idf.git
+
+export IDF_PATH=~/esp/esp-idf
+
+
+cd ~/catkin_ws/src
+export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:~/catkin_ws/src
+
+git clone https://www.github.com/sachin0x18/rosserial_esp32.git
+
+sudo apt install ros-noetic-rosserial
+to create the default libraries 
+cd <sketchbook>/libraries
+  rm -rf ros_lib
+  rosrun rosserial_arduino make_libraries.py .
+
+
+
+$ rosrun rosserial_esp32 make_libraries.py $IDF_PATH/components/
+
+After execution of above commands, all the necessary ROS files would have been generated in 
+$IDF_PATH/components/rosserial_esp32/
+
+Compiling for ESP32 from espressif did not work erro in esp_wifi_cpp file, we should change the board's hardware profile, or try with standard rosserial 
+ 
+rosrun rosserial_python serial_node.py /dev/ttyUSB0
+to run on ttyUSB serial port
+with the generic arduino rosserial , I have the following error (using a VM)
+Mismatched protocol version in packet (b'\xff'): lost sync or rosserial_python
+ 
+ to run on TCP 
+ rosrun rosserial_python serial_node.py tcp 11411 
