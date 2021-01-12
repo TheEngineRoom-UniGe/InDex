@@ -9,6 +9,7 @@
 #include <geometry_msgs/Quaternion.h>
 #include <WiFi.h>
 #include <std_msgs/String.h>
+
 //
 //  float getQuaternion(uint8_t i) const { return (i < 4) ? q[i] : 0.f; }
 //
@@ -211,6 +212,8 @@ void setup()
     }
     acc.x = 0;  acc.y = 0;  acc.z =0; gyr.x = 0;  gyr.y =0;  gyr.z = 0;
 
+
+
     Serial.println("I am Ready for I2C");
     //DEFAULT ADDRESS 0X68
     Wire.begin();
@@ -231,7 +234,25 @@ void setup()
     mpu1.setup();
 
     delay(500);
+    Serial.println(" Send C to calibrate"); 
+    delay (3000); 
+    while (Serial.available() >0)
+    {
+      a = Serial.read(); 
+    if (a == 'C')
+    {
+       // calibrate when you want to
+    mpu1.calibrateAccelGyro();
+    mpu1.calibrateMag();
 
+//    // save to eeprom
+//    saveCalibration();
+//
+//    // load from eeprom
+//    loadCalibration();
+
+    }
+    }
 }
 
 void loop()
