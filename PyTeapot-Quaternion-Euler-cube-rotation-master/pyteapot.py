@@ -8,13 +8,15 @@ import math
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from pygame.locals import *
-
+import sys
 useSerial = True # set true for using serial for data transmission, false for wifi
 useQuat = True   # set true for using quaternions, false for using y,p,r angles
-
+serialPortName='/dev/ttyUSB0' 
+if (len (sys.argv) >1):
+	serialPortName=sys.argv[1];
 if(useSerial):
     import serial
-    ser = serial.Serial('COM5', 115200)
+    ser = serial.Serial(serialPortName, 115200)
 
 else:
     import socket
