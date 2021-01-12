@@ -199,84 +199,84 @@ void loop()
 
 
       mpu2.update();
-      Serial.print("2");
+     // Serial.print("2");
       //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
-      Serial.print("w");Serial.print(mpu2.getQuaternion(0));Serial.print("w");
-      Serial.print("a");Serial.print(mpu2.getQuaternion(1));Serial.print("a");
-      Serial.print("b");Serial.print(mpu2.getQuaternion(2));Serial.print("b");
-      Serial.print("c");Serial.print(mpu2.getQuaternion(3));Serial.println("c");
-      
+//      Serial.print("w");Serial.print(mpu2.getQuaternion(0));Serial.print("w");
+//      Serial.print("a");Serial.print(mpu2.getQuaternion(1));Serial.print("a");
+//      Serial.print("b");Serial.print(mpu2.getQuaternion(2));Serial.print("b");
+//      Serial.print("c");Serial.print(mpu2.getQuaternion(3));Serial.println("c");
+//      
       
       tcaselect(5);
 
       mpu3.update();
-            Serial.print("3");
-
-      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
-      Serial.print("w");Serial.print(mpu3.getQuaternion(0));Serial.print("w");
-      Serial.print("a");Serial.print(mpu3.getQuaternion(1));Serial.print("a");
-      Serial.print("b");Serial.print(mpu3.getQuaternion(2));Serial.print("b");
-      Serial.print("c");Serial.print(mpu3.getQuaternion(3));Serial.println("c");
+//            Serial.print("3");
+//
+//      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
+//      Serial.print("w");Serial.print(mpu3.getQuaternion(0));Serial.print("w");
+//      Serial.print("a");Serial.print(mpu3.getQuaternion(1));Serial.print("a");
+//      Serial.print("b");Serial.print(mpu3.getQuaternion(2));Serial.print("b");
+//      Serial.print("c");Serial.print(mpu3.getQuaternion(3));Serial.println("c");
       
       
       mpu4.update();
-            Serial.print("4");
-
-      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
-      Serial.print("w");Serial.print(mpu4.getQuaternion(0));Serial.print("w");
-      Serial.print("a");Serial.print(mpu4.getQuaternion(1));Serial.print("a");
-      Serial.print("b");Serial.print(mpu4.getQuaternion(2));Serial.print("b");
-      Serial.print("c");Serial.print(mpu4.getQuaternion(3));Serial.println("c");
+//            Serial.print("4");
+//
+//      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
+//      Serial.print("w");Serial.print(mpu4.getQuaternion(0));Serial.print("w");
+//      Serial.print("a");Serial.print(mpu4.getQuaternion(1));Serial.print("a");
+//      Serial.print("b");Serial.print(mpu4.getQuaternion(2));Serial.print("b");
+//      Serial.print("c");Serial.print(mpu4.getQuaternion(3));Serial.println("c");
 
      tcaselect(4);
 
      mpu5.update();
-     Serial.print("5");
-
-      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
-      Serial.print("w");Serial.print(mpu5.getQuaternion(0));Serial.print("w");
-      Serial.print("a");Serial.print(mpu5.getQuaternion(1));Serial.print("a");
-      Serial.print("b");Serial.print(mpu5.getQuaternion(2));Serial.print("b");
-      Serial.print("c");Serial.print(mpu5.getQuaternion(3));Serial.println("c");
+//     Serial.print("5");
+//
+//      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
+//      Serial.print("w");Serial.print(mpu5.getQuaternion(0));Serial.print("w");
+//      Serial.print("a");Serial.print(mpu5.getQuaternion(1));Serial.print("a");
+//      Serial.print("b");Serial.print(mpu5.getQuaternion(2));Serial.print("b");
+//      Serial.print("c");Serial.print(mpu5.getQuaternion(3));Serial.println("c");
 
       mpu6.update();
-      Serial.print("6");
-
-      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
-      Serial.print("w");Serial.print(mpu6.getQuaternion(0));Serial.print("w");
-      Serial.print("a");Serial.print(mpu6.getQuaternion(1));Serial.print("a");
-      Serial.print("b");Serial.print(mpu6.getQuaternion(2));Serial.print("b");
-      Serial.print("c");Serial.print(mpu6.getQuaternion(3));Serial.println("c");
+//      Serial.print("6");
+//
+//      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
+//      Serial.print("w");Serial.print(mpu6.getQuaternion(0));Serial.print("w");
+//      Serial.print("a");Serial.print(mpu6.getQuaternion(1));Serial.print("a");
+//      Serial.print("b");Serial.print(mpu6.getQuaternion(2));Serial.print("b");
+//      Serial.print("c");Serial.print(mpu6.getQuaternion(3));Serial.println("c");
 
        tcaselect(3);
       mpu7.update();
-      Serial.print("7");
-      
-      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
-      Serial.print("w");Serial.print(mpu7.getQuaternion(0));Serial.print("w");
-      Serial.print("a");Serial.print(mpu7.getQuaternion(1));Serial.print("a");
-      Serial.print("b");Serial.print(mpu7.getQuaternion(2));Serial.print("b");
-      Serial.print("c");Serial.print(mpu7.getQuaternion(3));Serial.println("c");
+//      Serial.print("7");
+//      
+//      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
+//      Serial.print("w");Serial.print(mpu7.getQuaternion(0));Serial.print("w");
+//      Serial.print("a");Serial.print(mpu7.getQuaternion(1));Serial.print("a");
+//      Serial.print("b");Serial.print(mpu7.getQuaternion(2));Serial.print("b");
+//      Serial.print("c");Serial.print(mpu7.getQuaternion(3));Serial.println("c");
 
       mpu8.update();
 
-      Serial.print("8");
-    
-      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
-      Serial.print("w");Serial.print(mpu8.getQuaternion(0));Serial.print("w");
-      Serial.print("a");Serial.print(mpu8.getQuaternion(1));Serial.print("a");
-      Serial.print("b");Serial.print(mpu8.getQuaternion(2));Serial.print("b");
-      Serial.print("c");Serial.print(mpu8.getQuaternion(3));Serial.println("c");
+//      Serial.print("8");
+//    
+//      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
+//      Serial.print("w");Serial.print(mpu8.getQuaternion(0));Serial.print("w");
+//      Serial.print("a");Serial.print(mpu8.getQuaternion(1));Serial.print("a");
+//      Serial.print("b");Serial.print(mpu8.getQuaternion(2));Serial.print("b");
+//      Serial.print("c");Serial.print(mpu8.getQuaternion(3));Serial.println("c");
       tcaselect(2);
       mpu9.update();
 
-      Serial.print("9");
-
-      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
-      Serial.print("w");Serial.print(mpu9.getQuaternion(0));Serial.print("w");
-      Serial.print("a");Serial.print(mpu9.getQuaternion(1));Serial.print("a");
-      Serial.print("b");Serial.print(mpu9.getQuaternion(2));Serial.print("b");
-      Serial.print("c");Serial.print(mpu9.getQuaternion(3));Serial.println("c");
+//      Serial.print("9");
+//
+//      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
+//      Serial.print("w");Serial.print(mpu9.getQuaternion(0));Serial.print("w");
+//      Serial.print("a");Serial.print(mpu9.getQuaternion(1));Serial.print("a");
+//      Serial.print("b");Serial.print(mpu9.getQuaternion(2));Serial.print("b");
+//      Serial.print("c");Serial.print(mpu9.getQuaternion(3));Serial.println("c");
 //    Wire.requestFrom(0x4D, 1);    // request potentiometer position from slave 0x08
 //    while(Wire.available()) {        // read response from slave 0x08
 //    Serial.print( Wire.read());
