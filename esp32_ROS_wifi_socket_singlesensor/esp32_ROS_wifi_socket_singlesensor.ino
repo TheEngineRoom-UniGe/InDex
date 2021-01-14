@@ -9,7 +9,7 @@
 #include <geometry_msgs/Quaternion.h>
 #include <WiFi.h>
 #include <std_msgs/String.h>
-
+#include "eeprom_utils.h"
 //
 //  float getQuaternion(uint8_t i) const { return (i < 4) ? q[i] : 0.f; }
 //
@@ -20,13 +20,15 @@
 //
 //
 // ADC on 4D address 
-MPU9250 mpu1, mpu2, mpu3,mpu4; // mpu2 daisychained with mpu  , mpu4 daisychained with mpu3
-MPU9250 mpu5;
-MPU9250 mpu6;
-MPU9250 mpu7;
-MPU9250 mpu8;
-MPU9250 mpu9;
-MPU9250 mpu10;
+MPU9250 mpu; 
+//
+//MPU9250 mpu1, mpu2, mpu3,mpu4; // mpu2 daisychained with mpu  , mpu4 daisychained with mpu3
+//MPU9250 mpu5;
+//MPU9250 mpu6;
+//MPU9250 mpu7;
+//MPU9250 mpu8;
+//MPU9250 mpu9;
+//MPU9250 mpu10;
 const char* ssid = "EmaroLab-WiFi";
 const char* password = "walkingicub";
 IPAddress server (130, 251, 13, 113); //(192,168,43,94);//// ip of your ROS server
@@ -199,7 +201,11 @@ geometry_msgs::Vector3 acc;
 geometry_msgs::Vector3 gyr;
 geometry_msgs::Quaternion q;
 void setup()
-{   Serial.begin(115200);  
+{   pinMode(D2,INPUT);
+    pinMode(D3,OUTPUT); 
+    digitalWrite(D3,HIGH);
+    EEPROM.begin(512);
+    Serial.begin(115200);  
     setupWiFi();
     Serial.println("Here I Am");
     for (int i =0;i <5;i ++)
@@ -231,27 +237,43 @@ void setup()
     
     delay(1000);
    // tcaselect(6);
-    mpu1.setup();
+    mpu.setup();
 
     delay(500);
+  
+    int b = digitalRead(D2);
+    Serial.print("short D2 and D3 to calibrate , D2 is : " );Serial.println (b);; 
+    if (b >0)
+    {
+      mpu.calibrateAccelGyro();
+      mpu.calibrateMag();
+
+//    // save to eeprom
+      saveCalibration(true);
+    }
+
+else {
     Serial.println(" Send C to calibrate"); 
-    delay (3000); 
+    delay (3000);
     while (Serial.available() >0)
     {
       a = Serial.read(); 
-    if (a == 'C')
+     
+    if ((a == 'C'))
     {
        // calibrate when you want to
-    mpu1.calibrateAccelGyro();
-    mpu1.calibrateMag();
+    mpu.calibrateAccelGyro();
+    mpu.calibrateMag();
 
 //    // save to eeprom
-//    saveCalibration();
+    saveCalibration(true);
 //
-//    // load from eeprom
-//    loadCalibration();
 
     }
+    }
+    //    // load from eeprom
+    loadCalibration();
+    printCalibration();
     }
 }
 
@@ -262,20 +284,20 @@ void loop()
       {
      //   tcaselect(6);
        // delay(5); // with 10, 20 ms , works fine , always updating ,visualised using teapot // 10 ms seems more stable (26fps with teapot)
-        mpu1.update();
-   //     mpu1.printRawData();
-      //Serial.print(mpu1.getTemperature());
+        mpu.update();
+   //     mpu.printRawData();
+      //Serial.print(mpu.getTemperature());
       // the below code works with the PYteapot .
       // to read the temperature , we have set the AHRS to false
-     // Serial.print("t1");Serial.print(mpu1.getTemperature());Serial.print("t");
-      Serial.print("w");Serial.print(mpu1.getQuaternion(0));Serial.print("w");
-      Serial.print("a");Serial.print(mpu1.getQuaternion(1));Serial.print("a");
-      Serial.print("b");Serial.print(mpu1.getQuaternion(2));Serial.print("b");
-      Serial.print("c");Serial.print(mpu1.getQuaternion(3));Serial.println("c");
+     // Serial.print("t1");Serial.print(mpu.getTemperature());Serial.print("t");
+      Serial.print("w");Serial.print(mpu.getQuaternion(0));Serial.print("w");
+      Serial.print("a");Serial.print(mpu.getQuaternion(1));Serial.print("a");
+      Serial.print("b");Serial.print(mpu.getQuaternion(2));Serial.print("b");
+      Serial.print("c");Serial.print(mpu.getQuaternion(3));Serial.println("c");
       
-   q.x = mpu1.getQuaternion(0);  q.y = mpu1.getQuaternion(1);  q.z = mpu1.getQuaternion(2);  q.w = mpu1.getQuaternion(3);
-   acc.x = mpu1.getAcc(0); acc.y = mpu1.getAcc(1); acc.x = mpu1.getAcc(2);
-    gyr.x = mpu1.getGyro(0); gyr.y = mpu1.getGyro(1); gyr.z = mpu1.getGyro(2);
+   q.x = mpu.getQuaternion(0);  q.y = mpu.getQuaternion(1);  q.z = mpu.getQuaternion(2);  q.w = mpu.getQuaternion(3);
+   acc.x = mpu.getAcc(0); acc.y = mpu.getAcc(1); acc.x = mpu.getAcc(2);
+    gyr.x = mpu.getGyro(0); gyr.y = mpu.getGyro(1); gyr.z = mpu.getGyro(2);
    sendData( acc,  gyr,   q, P[1]);
 
     }
