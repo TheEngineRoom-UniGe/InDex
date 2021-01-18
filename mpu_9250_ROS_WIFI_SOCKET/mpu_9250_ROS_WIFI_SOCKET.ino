@@ -26,9 +26,9 @@ MPU9250 mpu7;
 MPU9250 mpu8;
 MPU9250 mpu9;
 MPU9250 mpu10;
-const char* ssid = "EmaroLab-WiFi";
-const char* password = "walkingicub";
-IPAddress server (130, 251, 13, 113); //(192,168,43,94);//// ip of your ROS server
+const char* ssid = "MiHotspot"; //"EmaroLab-WiFi";
+const char* password = "Pass123455";//"walkingicub";
+IPAddress server (192,168,43,94);//(130, 251, 13, 113); ////// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
 char a = 51;
@@ -305,7 +305,7 @@ void loop()
       q.x = mpu3.getQuaternion(0);  q.y = mpu3.getQuaternion(1);  q.z = mpu3.getQuaternion(2);  q.w = mpu3.getQuaternion(3);
       acc.x=mpu3.getAcc(0); acc.y=mpu3.getAcc(1); acc.x=mpu3.getAcc(2);
       gyr.x=mpu3.getGyro(0); gyr.y=mpu3.getGyro(1); gyr.z=mpu3.getGyro(2);
-      sendData( acc,  gyr,   q, P[4]);
+    //  sendData( acc,  gyr,   q, P[4]);
 //      Serial.print("3");
 //
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
@@ -319,7 +319,7 @@ void loop()
       q.x = mpu4.getQuaternion(0);  q.y = mpu4.getQuaternion(1);  q.z = mpu4.getQuaternion(2);  q.w = mpu4.getQuaternion(3);
       acc.x=mpu4.getAcc(0); acc.y=mpu4.getAcc(1); acc.x=mpu4.getAcc(2);
       gyr.x=mpu4.getGyro(0); gyr.y=mpu4.getGyro(1); gyr.z=mpu4.getGyro(2);
-      sendData( acc,  gyr,   q, P[5]);
+    //  sendData( acc,  gyr,   q, P[5]);
 //      Serial.print("4");
 //
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
@@ -334,7 +334,7 @@ void loop()
       q.x = mpu5.getQuaternion(0);  q.y = mpu5.getQuaternion(1);  q.z = mpu5.getQuaternion(2);  q.w = mpu5.getQuaternion(3);
       acc.x=mpu5.getAcc(0); acc.y=mpu5.getAcc(1); acc.x=mpu5.getAcc(2);
       gyr.x=mpu5.getGyro(0); gyr.y=mpu5.getGyro(1); gyr.z=mpu5.getGyro(2);
-      sendData( acc,  gyr,   q, P[6]);
+   //   sendData( acc,  gyr,   q, P[6]);
 //     Serial.print("5");
 //
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
@@ -347,7 +347,7 @@ void loop()
        q.x = mpu6.getQuaternion(0);  q.y = mpu6.getQuaternion(1);  q.z = mpu6.getQuaternion(2);  q.w = mpu6.getQuaternion(3);
        acc.x=mpu6.getAcc(0); acc.y=mpu6.getAcc(1); acc.x=mpu6.getAcc(2);
       gyr.x=mpu6.getGyro(0); gyr.y=mpu6.getGyro(1); gyr.z=mpu6.getGyro(2);
-   sendData( acc,  gyr,   q, P[7]);
+//   sendData( acc,  gyr,   q, P[7]);
 //      Serial.print("6");
 //
 //      Serial.print("w");Serial.print(mpu6.getQuaternion(0));Serial.print("w");
@@ -360,7 +360,7 @@ void loop()
        q.x = mpu7.getQuaternion(0);  q.y = mpu7.getQuaternion(1);  q.z = mpu7.getQuaternion(2);  q.w = mpu7.getQuaternion(3);
        acc.x=mpu7.getAcc(0); acc.y=mpu7.getAcc(1); acc.x=mpu7.getAcc(2);
        gyr.x=mpu7.getGyro(0); gyr.y=mpu7.getGyro(1); gyr.z=mpu7.getGyro(2);
-   sendData( acc,  gyr,   q, P[8]);
+ //  sendData( acc,  gyr,   q, P[8]);
 //      Serial.print("7");
 //      
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
@@ -374,7 +374,7 @@ void loop()
        
        acc.x=mpu8.getAcc(0); acc.y=mpu8.getAcc(1); acc.x=mpu8.getAcc(2);
        gyr.x=mpu8.getGyro(0); gyr.y=mpu8.getGyro(1); gyr.z=mpu8.getGyro(2);
-   sendData( acc,  gyr,   q, P[9]);
+ //  sendData( acc,  gyr,   q, P[9]);
 //
 //      Serial.print("8");
 //    

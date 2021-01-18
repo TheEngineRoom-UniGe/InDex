@@ -204,7 +204,7 @@ void setup()
 {   pinMode(D2,INPUT);
     pinMode(D3,OUTPUT); 
     digitalWrite(D3,HIGH);
-    EEPROM.begin(512);
+    EEPROM.begin(512); // otherwise it wont write
     Serial.begin(115200);  
     setupWiFi();
     Serial.println("Here I Am");
@@ -223,6 +223,8 @@ void setup()
     Serial.println("I am Ready for I2C");
     //DEFAULT ADDRESS 0X68
     Wire.begin();
+    Wire.setClock(400000);
+
     delay(1000);
     //tcaselect(6);Serial.println("scanning channel 6"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
     i2cTest();
