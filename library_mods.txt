@@ -1,0 +1,32 @@
+ #define FIFO_EN          0x23
+#define I2C_MST_CTRL     0x24
+#define I2C_SLV0_ADDR    0x25   // bit 7 is NW(not write)
+#define I2C_SLV0_REG     0x26 // from where to begin the transfer
+#define I2C_SLV0_CTRL    0x27
+#define FIFO_COUNTH      0x72
+#define FIFO_COUNTL      0x73
+#define MPU_CONFIG           0x1A  // write 0 on bit 6 to set fifo to overwrite
+
+writeByte(MPU9250_ADDRESS, USER_CTRL, 0x60);   // Enable FIFO and Mastermode
+writeByte(MPU9250_ADDRESS, FIFO_EN, 0x01);  //choosing slv0   
+writeByte(MPU9250_ADDRESS, I2C_SLV0_CTRL, 0x87); // 0x8X for svl0en , 0xX7 read 7 bytes
+//sensors for FIFO  (max size 512 bytes in MPU-9150)
+ writeByte(MPU9250_ADDRESS, I2C_SLV0_ADDR, 0x8C); // address 0x0C & 80 for read  
+ writeByte(MPU9250_ADDRESS, I2C_SLV0_REG, AK8963_ST1); 
+ // data ready is stored at AK8963_ST1 (0x02)
+ 
+ 
+ // I2C_SLV0_DO should be used to write to slave , but how to choose which register to write to ? 
+ 
+
+Addresses allocated for this magnetometer, should be 7 addresses: 
+EXT_SENS_DATA_00 (0x49) to EXT_SENS_DATA_06 (0x4F)
+
+
+// should read 7 bytes from magnetometer 
+// uint8_t c = rawData[6]; // End data read by reading ST2 register
+  //          if(!(c & 0x08)) { // Check if magnetic sensor overflow set, if not then report data
+   //             destination[0] = ((int16_t)rawData[1] << 8) | rawData[0];  // Turn the MSB and //LSB into a signed 16-bit value
+    //            destination[1] = ((int16_t)rawData[3] << 8) | rawData[2];  // Data stored as //little Endian
+    //            destination[2] = ((int16_t)rawData[5] << 8) | rawData[4];
+ 

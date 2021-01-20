@@ -1,5 +1,7 @@
-#include <MPU9250.h>
-#include "eeprom_utils.h"
+#include <MPU9250_FIFO.h>
+//#include <MPU9250.h>
+//#include "eeprom_utils.h"
+//#include "EEPROM.h"
 //
 //  float getQuaternion(uint8_t i) const { return (i < 4) ? q[i] : 0.f; }
 //
@@ -10,14 +12,15 @@
 //
 //
 // ADC on 4D address 
-MPU9250 mpu;
-MPU9250 mpu1, mpu2, mpu3,mpu4; // mpu2 daisychained with mpu  , mpu4 daisychained with mpu3
-MPU9250 mpu5;
-MPU9250 mpu6;
-MPU9250 mpu7;
-MPU9250 mpu8;
-MPU9250 mpu9;
-MPU9250 mpu10;
+MPU9250_FIFO mpu(0),mpu2(1), mpu3(2);
+//MPU9250 mpu2; 
+//MPU9250 mpu1, mpu2, mpu3,mpu4; // mpu2 daisychained with mpu  , mpu4 daisychained with mpu3
+//MPU9250 mpu5;
+//MPU9250 mpu6;
+//MPU9250 mpu7;
+//MPU9250 mpu8;
+//MPU9250 mpu9;
+//MPU9250 mpu10;
 void tcaselect(uint8_t i) {
   if (i > 7) return;
   Wire.beginTransmission(0x70);
@@ -81,65 +84,115 @@ void setup()
     delay(1000);
     tcaselect(6);Serial.println("scanning channel 6"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
     i2cTest();
-    tcaselect(5);Serial.println("scanning channel 5"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
+   tcaselect(5);Serial.println("scanning channel 5"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
     i2cTest();
-     tcaselect(4);Serial.println("scanning channel 4"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
-    i2cTest();
-     tcaselect(3); Serial.println("scanning channel 3");// 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
-    i2cTest();
-    tcaselect(2);Serial.println("scanning channel 2"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
-    i2cTest();
+//     tcaselect(4);Serial.println("scanning channel 4"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
+//    i2cTest();
+//     tcaselect(3); Serial.println("scanning channel 3");// 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
+//    i2cTest();
+//    tcaselect(2);Serial.println("scanning channel 2"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
+//    i2cTest();
     
     delay(1000);
     tcaselect(6);
     mpu.setup();
-    Serial.println(" Send C to calibrate"); 
+    mpu2.setI2CAddress(0x69);
+    mpu2.setup();
+   
+    tcaselect(5);
+    mpu3.setup();
+  
+    Serial.println(" Send C to calibrate magnetometer1 and D for magnetometer 2, E for 3, L for lazy calibration "); 
     delay (3000); 
+    
+
+//    mpu4.setI2CAddress(0x69); 
+//    mpu4.setup();
+////  
+//    tcaselect(4);
+//      
+//    mpu5.setup(); 
+//    mpu6.setI2CAddress(0x69); 
+//    mpu6.setup();
+//    
+//    tcaselect(3);
+//    mpu7.setup(); 
+//    mpu8.setI2CAddress(0x69); 
+//    mpu8.setup();
+//    
+//     tcaselect(2); // when we read from channel 2 , an error occured and all other readings fail
+//  mpu9.setI2CAddress(0x69); 
+//
+//    mpu9.setup(); 
+//    
     while (Serial.available() >0)
     {
-    int a = Serial.read(); 
-    if (a == 'C')
-    {
-       // calibrate when you want to
-    mpu.calibrateAccelGyro();
-    mpu.calibrateMag();
-
-   // save to eeprom
-    saveCalibration(true);
-//
-
-    }
-    }
-    loadCalibration(); // currently it loads for instance called mpu.
-    mpu.printCalibration();
-   // mpu1 = mpu; 
-    //mpu.printCalibration
-    mpu2.setup();
-    
-    tcaselect(5);
    
-//  //  i2cTest();
-//
-    mpu3.setup();
-    mpu4.setI2CAddress(0x69); 
-    mpu4.setup();
-//  
-    tcaselect(4);
+    int a = Serial.read(); 
+    switch (a){
+    case 'C':
+    {
+      tcaselect(6);
+      // calibrate when you want to
+      mpu.clearCalibration();
+      mpu.calibrateAccelGyro();
+      mpu.calibrateMag();
+      //   mpu.calibrateMag();
       
-    mpu5.setup(); 
-    mpu6.setI2CAddress(0x69); 
-    mpu6.setup();
-    
-    tcaselect(3);
-    mpu7.setup(); 
-    mpu8.setI2CAddress(0x69); 
-    mpu8.setup();
-    
-     tcaselect(2); // when we read from channel 2 , an error occured and all other readings fail
-  mpu9.setI2CAddress(0x69); 
+      // save to eeprom
+      mpu.saveCalibration(true);
+      //
+      break;
+    }
+    case 'D':
+    {  
+      tcaselect(6);
+      mpu2.clearCalibration();
+      mpu2.calibrateAccelGyro();
+      mpu2.calibrateMag();
+      //   mpu.calibrateMag();
+      
+      // save to eeprom
+      mpu2.saveCalibration(true);
+      break;
+    }
+    case 'E':
+    { 
+      tcaselect(5);
+      mpu3.clearCalibration();
+      mpu3.calibrateAccelGyro();
+      mpu3.calibrateMag();
+      //   mpu.calibrateMag();
+      
+      // save to eeprom
+      mpu3.saveCalibration(true);
+      break;
+    }
+    case 'L':
+    {
+    Serial.println("lazy calibration");
+    mpu.lazyCalibration(3); // number of sensors in total
+    }
+    }
+    }
+ //  mpu.calibrateAccelGyro();
+    if (mpu.isCalibrated())
+    mpu.loadCalibration(); // currently it loads for instance called mpu.
+    mpu.printCalibrationfromEEPROM();
+    mpu.printCalibration();
 
-    mpu9.setup(); 
-//    
+      if (mpu2.isCalibrated())
+    mpu2.loadCalibration(); // currently it loads for instance called mpu.
+    mpu2.printCalibrationfromEEPROM();
+    mpu2.printCalibration();
+//   // mpu1 = mpu; 
+//    //mpu.printCalibration
+    
+   if (mpu3.isCalibrated())
+    mpu3.loadCalibration(); // currently it loads for instance called mpu.
+    mpu3.printCalibrationfromEEPROM();
+    mpu3.printCalibration();
+ 
     delay(500);
 
 }
@@ -170,42 +223,18 @@ void loop()
 //        Serial.print(mpu2.getPitch());
 //        Serial.print(" yaw   (z-down (down))     : ");
 //        Serial.println(mpu2.getYaw());
-////
-//        tcaselect(5);
-////
-//        mpu3.update(); 
-////        mpu3.printRawData();
-//          Serial.print ("MPU3"); 
-//        Serial.print(" roll  (x-forward (north)) : ");
-//        Serial.print(mpu3.getRoll());
-//        Serial.print(" pitch (y-right (east))    : ");
-//        Serial.print(mpu3.getPitch());
-//        Serial.print(" yaw   (z-down (down))     : ");
-//        Serial.println(mpu3.getYaw());
-//        mpu4.update(); 
-//        Serial.print ("MPU4"); 
-//        Serial.print(" roll  (x-forward (north)) : ");
-//        Serial.print(mpu4.getRoll());
-//        Serial.print(" pitch (y-right (east))    : ");
-//        Serial.print(mpu4.getPitch());
-//        Serial.print(" yaw   (z-down (down))     : ");
-//        Serial.println(mpu4.getYaw());
-//        prev_ms = millis();
-//       
-//    }
-
 
       {
         tcaselect(6);
        // delay(5); // with 10, 20 ms , works fine , always updating ,visualised using teapot // 10 ms seems more stable (26fps with teapot)
         mpu.update();
-//        Serial.print((int)1000 * mpu1.getAcc(0));Serial.print("a\t");
-//        Serial.print((int)1000 * mpu1.getAcc(1));Serial.print("a\t");
-//        Serial.print((int)1000 * mpu1.getAcc(2));Serial.print("a\t");
+//        Serial.print((int)1000 * mpu.getAcc(0));Serial.print("a\t");
+//        Serial.print((int)1000 * mpu.getAcc(1));Serial.print("a\t");
+//        Serial.print((int)1000 * mpu.getAcc(2));Serial.print("a\t");
 //        // Print gyro values in degree/sec
-//         Serial.print(mpu1.getGyro(0));Serial.print("g\t");
-//         Serial.print(mpu1.getGyro(1));Serial.print("g\t");
-//         Serial.print(mpu1.getGyro(2));Serial.print("g\t");
+//         Serial.print(mpu.getGyro(0));Serial.print("g\t");
+//         Serial.print(mpu.getGyro(1));Serial.print("g\t");
+//         Serial.print(mpu.getGyro(2));Serial.print("g\t");
 ////
 //        Serial.print((int)mpu.getMag(0));Serial.print("m\t");
 //        Serial.print((int)mpu.getMag(1));Serial.print("m\t");
@@ -215,10 +244,10 @@ void loop()
       // the below code works with the PYteapot .
       // to read the temperature , we have set the AHRS to false
      // Serial.print("t1");Serial.print(mpu1.getTemperature());Serial.print("t");
-      Serial.print("w");Serial.print(mpu.getQuaternion(0));Serial.print("w");
-      Serial.print("a");Serial.print(mpu.getQuaternion(1));Serial.print("a");
-      Serial.print("b");Serial.print(mpu.getQuaternion(2));Serial.print("b");
-      Serial.print("c");Serial.print(mpu.getQuaternion(3));Serial.println("c");
+//      Serial.print("w");Serial.print(mpu.getQuaternion(0));Serial.print("w");
+//      Serial.print("a");Serial.print(mpu.getQuaternion(1));Serial.print("a");
+//      Serial.print("b");Serial.print(mpu.getQuaternion(2));Serial.print("b");
+//      Serial.print("c");Serial.print(mpu.getQuaternion(3));Serial.println("c");
 ////      Serial.print("roll  (x-forward (north)) : ");
 //      Serial.print(mpu1.getRoll());
 //      Serial.print(" pitch (y-right (east))    : ");
@@ -227,14 +256,15 @@ void loop()
 //      Serial.println(mpu1.getYaw());
 
 
-  //    mpu2.update();
+      mpu2.update();
 //      Serial.print("2");Serial.print("m\t");
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
-//      Serial.print("w");Serial.print(mpu2.getQuaternion(0));Serial.print("w");
-//      Serial.print("a");Serial.print(mpu2.getQuaternion(1));Serial.print("a");
-//      Serial.print("b");Serial.print(mpu2.getQuaternion(2));Serial.print("b");
-//      Serial.print("c");Serial.print(mpu2.getQuaternion(3));Serial.println("c");
-//      
+      Serial.print("w");Serial.print(mpu2.getQuaternion(0));Serial.print("w");
+      Serial.print("a");Serial.print(mpu2.getQuaternion(1));Serial.print("a");
+      Serial.print("b");Serial.print(mpu2.getQuaternion(2));Serial.print("b");
+      Serial.print("c");Serial.print(mpu2.getQuaternion(3));Serial.println("c");
+////     
+//        Serial.print("m\t"); 
 //        Serial.print((int)mpu2.getMag(0));Serial.print("m\t");
 //        Serial.print((int)mpu2.getMag(1));Serial.print("m\t");
 //        Serial.print((int)mpu2.getMag(2));Serial.print("m\n");
