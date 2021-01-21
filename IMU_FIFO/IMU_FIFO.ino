@@ -1,4 +1,139 @@
+#include <ros.h>
+#include <std_msgs/String.h>
+#include <sensor_msgs/Imu.h>
+#include <std_msgs/Header.h>
+#include <geometry_msgs/Vector3.h>
+#include <geometry_msgs/Quaternion.h>
+#include <WiFi.h>
+#include <std_msgs/String.h>
 #include <MPU9250_FIFO.h>
+const char* ssid = "EmaroLab-WiFi";
+const char* password = "walkingicub";
+IPAddress server (130, 251, 13, 113); //(192,168,43,94);//// ip of your ROS server
+IPAddress ip;  
+int status = WL_IDLE_STATUS;
+char a = 51;
+int8_t P[12] = {0,1,2,3,4,5,15,16,17,18,19,20};
+WiFiClient client;
+unsigned int localPort = 2390;
+
+void setupWiFi()
+{ bool onoff=true;
+  WiFi.begin(ssid, password);
+  //Print to serial to find out IP address and debugging
+  Serial.print("\nConnecting to "); Serial.println(ssid);
+  uint8_t i = 0;
+  while (WiFi.status() != WL_CONNECTED && i++ < 20) 
+  {
+    delay(500);
+    onoff=!onoff;
+    digitalWrite (LED_BUILTIN, onoff);
+    
+//    digitalWrite (D9, onoff);
+    Serial.print(".....");
+
+  }
+  if(i == 21){
+    Serial.print("Could not connect to"); Serial.println(ssid);
+    while(1) delay(500);
+  }
+  Serial.print("Ready! Use ");
+  ip = WiFi.localIP();
+  Serial.print(ip);
+  Serial.println(" to access client");
+  
+
+}
+
+typedef union {
+ float floatingPoint[4];
+ byte binary[16];
+} binary4Float;
+
+typedef union{
+  int8_t integerPoint;
+  byte binary;
+} binaryInt;
+
+typedef union{
+  int16_t integerPoint[3];
+  byte binary[6];
+} binary3Int;
+
+void sendData(  geometry_msgs::Vector3 accel, geometry_msgs::Vector3 gyro,  geometry_msgs::Quaternion q, int8_t id){
+  binaryInt ID;
+  ID.integerPoint = id;
+  WiFiUDP Udp;
+  binary4Float quaternion;
+  quaternion.floatingPoint[0] = q.x;
+  quaternion.floatingPoint[1] = q.y;
+  quaternion.floatingPoint[2] = q.z;
+  quaternion.floatingPoint[3] = q.w;
+
+  binary3Int accelerometer;
+  accelerometer.integerPoint[0] = accel.x;
+  accelerometer.integerPoint[1] = accel.y;
+  accelerometer.integerPoint[2] = accel.z;
+
+  binary3Int gyroscope;
+  gyroscope.integerPoint[0] = gyro.x;
+  gyroscope.integerPoint[1] = gyro.y;
+  gyroscope.integerPoint[2] = gyro.z;
+
+  byte packetBuffer[29];
+  memset(packetBuffer, 0, 29);
+
+  packetBuffer[28] = ID.binary;
+ // packetBuffer[16] = ID.binary;
+  
+  for(int i=0; i<16; i++){
+    packetBuffer[i] = quaternion.binary[i];
+  }
+  
+  for(int i=16; i<22; i++){
+    packetBuffer[i] = accelerometer.binary[i-16];
+  }
+
+  for(int i=22; i<28; i++){
+    packetBuffer[i] = gyroscope.binary[i-22];
+  }
+
+  Udp.beginPacket(server, localPort);
+  Udp.write(packetBuffer, 29);
+  Udp.endPacket();  
+}
+
+
+
+class WiFiHardware {
+
+  public:
+  WiFiHardware() {};
+
+  void init() {
+    // do your initialization here. this probably includes TCP server/client setup
+    client.connect(server, 11411);
+  }
+
+  // read a byte from the serial port. -1 = failure
+  int read() {
+    // implement this method so that it reads a byte from the TsendCP connection and returns it
+    //  you may return -1 is there is an error; for example if the TCP connection is not open
+    return client.read();         //will return -1 when it will works
+  }
+
+  // write data to the connection to ROS
+  void write(uint8_t* data, int length) {
+    // implement this so that it takes the arguments and writes or prints them to the TCP connection
+    for(int i=0; i<length; i++)
+      client.write(data[i]);
+  }
+
+  // returns milliseconds since start of program
+  unsigned long time() {
+     return millis(); // easy; did this one for you
+  }
+};
 //#include <MPU9250.h>
 //#include "eeprom_utils.h"
 //#include "EEPROM.h"
@@ -65,6 +200,7 @@ void i2cTest() {
 
 void setup()
 {   EEPROM.begin(512); // otherwise it wont write
+    setupWiFi();
     Serial.begin(115200);  
     Serial.println("Here I Am");
     for (int i =0;i <5;i ++)

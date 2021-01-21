@@ -9,7 +9,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from pygame.locals import *
 import sys
-useSerial = True # set true for using serial for data transmission, false for wifi
+useSerial = False # set true for using serial for data transmission, false for wifi
 useQuat = True   # set true for using quaternions, false for using y,p,r angles
 serialPortName='/dev/ttyUSB0' 
 if (len (sys.argv) >1):
@@ -21,12 +21,12 @@ if(useSerial):
 else:
     import socket
 
-    UDP_IP = "0.0.0.0"
+    UDP_IP = "127.0.0.1"
     UDP_PORT = 5005
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
     sock.bind((UDP_IP, UDP_PORT))
-
+    print ("socket created")
 def main():
     video_flags = OPENGL | DOUBLEBUF
     pygame.init()

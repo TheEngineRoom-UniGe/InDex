@@ -203,6 +203,7 @@ geometry_msgs::Quaternion q;
 void setup()
 {   pinMode(D2,INPUT);
     pinMode(D3,OUTPUT); 
+    pinMode(D9,OUTPUT);  // LED PIN
     digitalWrite(D3,HIGH);
     EEPROM.begin(512); // otherwise it wont write
     Serial.begin(115200);  
@@ -214,6 +215,8 @@ void setup()
     delay(500);  
     digitalWrite(LED_BUILTIN, LOW); 
     delay(200);  
+   // digitalWrite(LED_BUILTIN, HIGH); 
+    digitalWrite(D9, HIGH); 
     // does not work when on usb
     }
     acc.x = 0;  acc.y = 0;  acc.z =0; gyr.x = 0;  gyr.y =0;  gyr.z = 0;
@@ -245,7 +248,7 @@ void setup()
   
     int b = digitalRead(D2);
     Serial.print("short D2 and D3 to calibrate , D2 is : " );Serial.println (b);; 
-    if (b >0)
+if (b >0)
     {
       mpu.calibrateAccelGyro();
       mpu.calibrateMag();
@@ -272,15 +275,20 @@ else {
 //
 
     }
+    
     }
     //    // load from eeprom
     loadCalibration();
+   // mpu.calibrateAccelGyro();
     printCalibration();
     }
+       
+
 }
 
 void loop()
 {
+    digitalWrite(LED_BUILTIN, HIGH); 
     static uint32_t prev_ms = millis();
     if ((millis() - prev_ms) > 1)
       {
