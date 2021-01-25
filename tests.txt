@@ -15,4 +15,20 @@ This is the normal behaviour:
 writeByte(MPU9250_ADDRESS, I2C_MST_CTRL, 0x00); // Disable I2C master // 0x0D for 400 khz clock
 writeByte(MPU9250_ADDRESS, USER_CTRL, 0x00);    // Disable FIFO and I2C master modes //  0x20 for master mode
 
+This was solved, and library is changed to put the mag data in the FIFO, here the MPU9250 has a master I2C, which reads from the Mag as slave, Mag is no visible on the main I2C lane
+
+
+25/01/2021
+
+// Removing all the send , and keeping the updates, raises the topic's HZ to 35 instead of 28 (8 sensors)
+// removing updateMag() from the library, raises the HZ to 62 (8 sensors)
+// removing the while(!(readByte(MPU9250_ADDRESS, EXT_SENS_DATA_00) & 0x01)); , raises the HZ to 52
+The most expensive function is the mpu9250.update
+
+Using the wire1 library, it is possible to use the second I2C interface. 
+Wire1.begin (D7,D8,400000);  // Data , clock ,frequency , The current configuration works fine 
+
+
+
+
 

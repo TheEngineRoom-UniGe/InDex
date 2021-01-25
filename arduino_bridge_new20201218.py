@@ -28,6 +28,8 @@ v.vector.y = 0
 v.vector.z = 1
 
 t = TransformStamped()
+print("UDP target IP: %s" % UDP_IP)
+print("UDP target port: %s" % UDP_PORT)
 
 def plane_angle(a1, b1, c1, a2, b2, c2):
     divider = math.sqrt(pow(a1,2)+pow(b1,2)+pow(c1,2))*math.sqrt(pow(a2,2)+pow(b2,2)+pow(c2,2))
@@ -118,7 +120,7 @@ def listener():
 
 			#print(plane)
 			#br.sendTransform((0.0, 0.0, 0.0), tf.transformations.quaternion_from_euler(0, 0, 1.57), rospy.Time.now(), "root_rotated", "root")
-			print ("msg received");
+		#	print ("msg received");
 			pub = rospy.Publisher(names[ID], Imu, queue_size=0)
 			pub.publish(msg)
 
@@ -129,9 +131,9 @@ def print_to_socket(msg):
 	UDP_PORT_ = 5005
 	MESSAGE = (f'{"w"}{"{:.2f}".format(msg.orientation.x)}{"w"}{"a"}{"{:.2f}".format(msg.orientation.y)}{"a"}{"b"}{"{:.2f}".format(msg.orientation.z)}{"b"}{"c"}{"{:.2f}".format(msg.orientation.w)}{"c"}')
 	print(msg.header.stamp)
-	print("UDP target IP: %s" % UDP_IP)
-	print("UDP target port: %s" % UDP_PORT)
-	print("message: %s" % MESSAGE)
+	#print("UDP target IP: %s" % UDP_IP)
+#	print("UDP target port: %s" % UDP_PORT)
+#	print("message: %s" % MESSAGE)
 	 
 	sock = socket.socket(socket.AF_INET, # Internet
 		              socket.SOCK_DGRAM) # UDP

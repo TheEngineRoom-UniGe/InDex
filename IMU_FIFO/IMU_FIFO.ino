@@ -7,9 +7,9 @@
 #include <WiFi.h>
 #include <std_msgs/String.h>
 #include <MPU9250_FIFO.h>
-const char* ssid = "MiHotspot" ;// "EmaroLab-WiFi";
-const char* password = "Pass123455";//"walkingicub";
-IPAddress server (192,168,43,94);//(130, 251, 13, 113); //// ip of your ROS server
+const char* ssid = "EmaroLab-WiFi";//"MiHotspot" ; // 
+const char* password = "walkingicub";//"Pass123455";//
+IPAddress server (130, 251, 13, 113); //(192,168,43,94);////// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
 char a = 51;
@@ -218,7 +218,15 @@ void setup()
     Wire.begin();
     Wire.setClock(400000);
 
+    Wire1.begin (D7,D8,400000);  // Data , clock ,frequency 
+    Wire1.beginTransmission(0x68);
+    int error = Wire1.endTransmission();
+    if (error == 0) 
+      Serial.println("I2C device found at 0x68, second I2c");
+   else 
+   Serial.println("second I2c lane ,no device found");
     delay(1000);
+    
     tcaselect(6);Serial.println("scanning channel 6"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
     i2cTest();
    tcaselect(5);Serial.println("scanning channel 5"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
@@ -227,8 +235,8 @@ void setup()
     i2cTest();
      tcaselect(3); Serial.println("scanning channel 3");// 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
     i2cTest();
-    tcaselect(2);Serial.println("scanning channel 2"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
-    i2cTest();
+    //tcaselect(2);Serial.println("scanning channel 2"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
+    //i2cTest();
     
     delay(1000);
     tcaselect(6);
@@ -338,8 +346,7 @@ geometry_msgs::Vector3 gyr;
 geometry_msgs::Quaternion q;
 void loop()
 {
-    static uint32_t prev_ms = millis();
-    if ((millis() - prev_ms) > 20)
+ 
 //    {  tcaselect(6);
 //      delay(200);
 //       mpu.update();
@@ -364,14 +371,15 @@ void loop()
 //        Serial.println(mpu2.getYaw());
 
       {
-    static uint32_t prev_ms = millis();
-    if ((millis() - prev_ms) > 1)
+    //static uint32_t prev_ms = millis();
+  //  if ((millis() - prev_ms) > 1)
       {
         tcaselect(6);
        // delay(5); // with 10, 20 ms , works fine , always updating ,visualised using teapot // 10 ms seems more stable (26fps with teapot)
        
-         
+      //   prev_ms = millis();
          mpu.update();
+         
         // delay(5);
    //     mpu.printRawData();
       //Serial.print(mpu.getTemperature());
@@ -387,10 +395,10 @@ void loop()
       acc.x = mpu.getAcc(0); acc.y = mpu.getAcc(1); acc.x = mpu.getAcc(2);
       gyr.x = mpu.getGyro(0); gyr.y = mpu.getGyro(1); gyr.z = mpu.getGyro(2);
 
-   sendData( acc,  gyr,   q, P[2]);
+     sendData( acc,  gyr,   q, P[2]);
 //
       mpu2.update();
-//      Serial.print("2");
+      Serial.print("2");
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
 //      Serial.print("w");Serial.print(mpu2.getQuaternion(0));Serial.print("w");
 //      Serial.print("a");Serial.print(mpu2.getQuaternion(1));Serial.print("a");
@@ -409,7 +417,7 @@ void loop()
       acc.x=mpu3.getAcc(0); acc.y=mpu3.getAcc(1); acc.x=mpu3.getAcc(2);
       gyr.x=mpu3.getGyro(0); gyr.y=mpu3.getGyro(1); gyr.z=mpu3.getGyro(2);
       sendData( acc,  gyr,   q, P[4]);
-//      Serial.print("3");
+      Serial.print("3");
 //
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
 //      Serial.print("w");Serial.print(mpu3.getQuaternion(0));Serial.print("w");
@@ -423,7 +431,7 @@ void loop()
       acc.x=mpu4.getAcc(0); acc.y=mpu4.getAcc(1); acc.x=mpu4.getAcc(2);
       gyr.x=mpu4.getGyro(0); gyr.y=mpu4.getGyro(1); gyr.z=mpu4.getGyro(2);
       sendData( acc,  gyr,   q, P[5]);
-//      Serial.print("4");
+      Serial.print("4");
 //
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
 //      Serial.print("w");Serial.print(mpu4.getQuaternion(0));Serial.print("w");
@@ -438,7 +446,7 @@ void loop()
       acc.x=mpu5.getAcc(0); acc.y=mpu5.getAcc(1); acc.x=mpu5.getAcc(2);
       gyr.x=mpu5.getGyro(0); gyr.y=mpu5.getGyro(1); gyr.z=mpu5.getGyro(2);
       sendData( acc,  gyr,   q, P[6]);
-//     Serial.print("5");
+     Serial.print("5");
 //
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
 //      Serial.print("w");Serial.print(mpu5.getQuaternion(0));Serial.print("w");
@@ -451,7 +459,7 @@ void loop()
        acc.x=mpu6.getAcc(0); acc.y=mpu6.getAcc(1); acc.x=mpu6.getAcc(2);
       gyr.x=mpu6.getGyro(0); gyr.y=mpu6.getGyro(1); gyr.z=mpu6.getGyro(2);
    sendData( acc,  gyr,   q, P[7]);
-//      Serial.print("6");
+      Serial.print("6");
 //
 //      Serial.print("w");Serial.print(mpu6.getQuaternion(0));Serial.print("w");
 //      Serial.print("a");Serial.print(mpu6.getQuaternion(1));Serial.print("a");
@@ -464,7 +472,7 @@ void loop()
        acc.x=mpu7.getAcc(0); acc.y=mpu7.getAcc(1); acc.x=mpu7.getAcc(2);
        gyr.x=mpu7.getGyro(0); gyr.y=mpu7.getGyro(1); gyr.z=mpu7.getGyro(2);
    sendData( acc,  gyr,   q, P[8]);
-//      Serial.print("7");
+      Serial.print("7");
 //      
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
 //      Serial.print("w");Serial.print(mpu7.getQuaternion(0));Serial.print("w");
@@ -478,7 +486,8 @@ void loop()
        acc.x=mpu8.getAcc(0); acc.y=mpu8.getAcc(1); acc.x=mpu8.getAcc(2);
        gyr.x=mpu8.getGyro(0); gyr.y=mpu8.getGyro(1); gyr.z=mpu8.getGyro(2);
    sendData( acc,  gyr,   q, P[9]);
-  //    tcaselect(2);
+       Serial.print("8");
+      //tcaselect(2);
   //    mpu9.update();
 
 //      Serial.print("9");
@@ -494,6 +503,7 @@ void loop()
 //      }
 //         
 //
+    //Serial.print("time elapsed");Serial.println(millis() - prev_ms);
     }
 }
 }
