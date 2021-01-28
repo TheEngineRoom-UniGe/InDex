@@ -13,7 +13,7 @@ IPAddress server (130, 251, 13, 113); //(192,168,43,94);////// ip of your ROS se
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
 char a = 51;
-int8_t P[12] = {0,1,2,3,4,5,15,16,17,18,19,20};
+int8_t P[13] = {0,1,2,3,4,5,15,16,17,18,19,20,21};
 WiFiClient client;
 unsigned int localPort = 2390;
 
@@ -72,8 +72,8 @@ void sendData(  geometry_msgs::Vector3 accel, geometry_msgs::Vector3 gyro,  geom
   quaternion.floatingPoint[3] = q.w;
 
   binary3Int accelerometer;
-  accelerometer.integerPoint[0] = accel.x;
-  accelerometer.integerPoint[1] = accel.y;
+  accelerometer.integerPoint[0] =accel.x;
+  accelerometer.integerPoint[1] =accel.y;
   accelerometer.integerPoint[2] = accel.z;
 
   binary3Int gyroscope;
@@ -90,7 +90,7 @@ void sendData(  geometry_msgs::Vector3 accel, geometry_msgs::Vector3 gyro,  geom
   for(int i=0; i<16; i++){
     packetBuffer[i] = quaternion.binary[i];
   }
-  
+//  
   for(int i=16; i<22; i++){
     packetBuffer[i] = accelerometer.binary[i-16];
   }
@@ -148,7 +148,7 @@ class WiFiHardware {
 //
 //
 // ADC on 4D address 
-MPU9250_FIFO mpu(0),mpu2(1), mpu3(2),mpu4(3),mpu5(4),mpu6(5),mpu7(6),mpu8(7),mpu9(8);
+MPU9250_FIFO mpu(0),mpu2(1), mpu3(2),mpu4(3),mpu5(4),mpu6(5),mpu7(6),mpu8(7),mpu9(8),mpu10(9),mpu11(10);
 //MPU9250 mpu2; 
 //MPU9250 mpu, mpu2, mpu3,mpu4; // mpu2 daisychained with mpu  , mpu4 daisychained with mpu3
 //MPU9250 mpu5;
@@ -163,7 +163,15 @@ void tcaselect(uint8_t i) {
   Wire.write(1 << i);
   Wire.endTransmission();  
 }
- 
+
+void tcaselect_w1(uint8_t i) {
+  if (i > 7) return;
+  Wire1.beginTransmission(0x70);
+  Wire1.write(1 << i);
+  int error=Wire1.endTransmission();  
+  if (error) Serial.println("error connecting to multiplexer");
+}
+
 void i2cTest() {
   byte error, address;
   int nDevices;
@@ -198,7 +206,27 @@ void i2cTest() {
   delay(1000);          
 }
 
-
+void scanW1(){
+  int error;
+    for ( uint8_t i = 0; i <8;i++)
+    {
+    tcaselect_w1(i);
+    Wire1.beginTransmission(0x68);
+    error = Wire1.endTransmission();
+    if (error == 0) 
+      Serial.println("I2C device found at 0x68, second I2c");
+    else {
+      Serial.print("second I2c lane ,0x68 not found at MX "); Serial.println(i); }
+    
+    Wire1.beginTransmission(0x69);
+    error = Wire1.endTransmission();
+    if (error == 0) 
+      Serial.println("I2C device found at 0x69, second I2c");
+    else 
+    {  Serial.print("second I2c lane ,0x69 not found at MX "); Serial.println(i); }
+    }
+}
+  
 void setup()
 {   EEPROM.begin(512); // otherwise it wont write
     Serial.begin(115200);  
@@ -219,12 +247,8 @@ void setup()
     Wire.setClock(400000);
 
     Wire1.begin (D7,D8,400000);  // Data , clock ,frequency 
-    Wire1.beginTransmission(0x68);
-    int error = Wire1.endTransmission();
-    if (error == 0) 
-      Serial.println("I2C device found at 0x68, second I2c");
-   else 
-   Serial.println("second I2c lane ,no device found");
+
+    scanW1();
     delay(1000);
     
     tcaselect(6);Serial.println("scanning channel 6"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
@@ -270,6 +294,13 @@ void setup()
 ////
 //    mpu9.setup(); 
 //    
+    Serial.println("setup MPU on second multiplexer"); 
+    tcaselect_w1(6);
+    mpu10.setup(Wire1);
+
+    Serial.println("setup MPU on second multiplexer"); 
+    tcaselect_w1(7);
+    mpu11.setup(Wire1);
     while (Serial.available() >0)
     {
    
@@ -344,6 +375,7 @@ void setup()
 geometry_msgs::Vector3 acc;
 geometry_msgs::Vector3 gyr;
 geometry_msgs::Quaternion q;
+
 void loop()
 {
  
@@ -390,15 +422,16 @@ void loop()
 //      Serial.print("a");Serial.print(mpu.getQuaternion(1));Serial.print("a");
 //      Serial.print("b");Serial.print(mpu.getQuaternion(2));Serial.print("b");
 //      Serial.print("c");Serial.print(mpu.getQuaternion(3));Serial.println("c");
-      
+      acc.x=0; acc.y=0; acc.z=0;
+      gyr.x=0; gyr.y=0; gyr.z=0;
       q.x = mpu.getQuaternion(0);  q.y = mpu.getQuaternion(1);  q.z = mpu.getQuaternion(2);  q.w = mpu.getQuaternion(3);
-      acc.x = mpu.getAcc(0); acc.y = mpu.getAcc(1); acc.x = mpu.getAcc(2);
-      gyr.x = mpu.getGyro(0); gyr.y = mpu.getGyro(1); gyr.z = mpu.getGyro(2);
+//      acc.x = mpu.getAcc(0); acc.y = mpu.getAcc(1); acc.x = mpu.getAcc(2);
+//      gyr.x = mpu.getGyro(0); gyr.y = mpu.getGyro(1); gyr.z = mpu.getGyro(2);
 
      sendData( acc,  gyr,   q, P[2]);
 //
       mpu2.update();
-      Serial.print("2");
+    //  Serial.print("2");
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
 //      Serial.print("w");Serial.print(mpu2.getQuaternion(0));Serial.print("w");
 //      Serial.print("a");Serial.print(mpu2.getQuaternion(1));Serial.print("a");
@@ -406,18 +439,18 @@ void loop()
 //      Serial.print("c");Serial.print(mpu2.getQuaternion(3));Serial.println("c");
 //    
    q.x = mpu2.getQuaternion(0);  q.y = mpu2.getQuaternion(1);  q.z = mpu2.getQuaternion(2);  q.w = mpu2.getQuaternion(3);
-   acc.x=mpu2.getAcc(0); acc.y=mpu2.getAcc(1); acc.x=mpu2.getAcc(2);
-   gyr.x=mpu2.getGyro(0); gyr.y=mpu2.getGyro(1); gyr.z=mpu2.getGyro(2);
+//   acc.x=mpu2.getAcc(0); acc.y=mpu2.getAcc(1); acc.x=mpu2.getAcc(2);
+//   gyr.x=mpu2.getGyro(0); gyr.y=mpu2.getGyro(1); gyr.z=mpu2.getGyro(2);
      sendData( acc,  gyr,   q, P[3]);
      //
       tcaselect(5);
       mpu3.update();
      // delay(5); adding this delay helped to get more updates on the 0x69 address
       q.x = mpu3.getQuaternion(0);  q.y = mpu3.getQuaternion(1);  q.z = mpu3.getQuaternion(2);  q.w = mpu3.getQuaternion(3);
-      acc.x=mpu3.getAcc(0); acc.y=mpu3.getAcc(1); acc.x=mpu3.getAcc(2);
-      gyr.x=mpu3.getGyro(0); gyr.y=mpu3.getGyro(1); gyr.z=mpu3.getGyro(2);
+//      acc.x=mpu3.getAcc(0); acc.y=mpu3.getAcc(1); acc.x=mpu3.getAcc(2);
+//      gyr.x=mpu3.getGyro(0); gyr.y=mpu3.getGyro(1); gyr.z=mpu3.getGyro(2);
       sendData( acc,  gyr,   q, P[4]);
-      Serial.print("3");
+    //  Serial.print("3");
 //
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
 //      Serial.print("w");Serial.print(mpu3.getQuaternion(0));Serial.print("w");
@@ -428,10 +461,10 @@ void loop()
         
       mpu4.update();
       q.x = mpu4.getQuaternion(0);  q.y = mpu4.getQuaternion(1);  q.z = mpu4.getQuaternion(2);  q.w = mpu4.getQuaternion(3);
-      acc.x=mpu4.getAcc(0); acc.y=mpu4.getAcc(1); acc.x=mpu4.getAcc(2);
-      gyr.x=mpu4.getGyro(0); gyr.y=mpu4.getGyro(1); gyr.z=mpu4.getGyro(2);
+//      acc.x=mpu4.getAcc(0); acc.y=mpu4.getAcc(1); acc.x=mpu4.getAcc(2);
+//      gyr.x=mpu4.getGyro(0); gyr.y=mpu4.getGyro(1); gyr.z=mpu4.getGyro(2);
       sendData( acc,  gyr,   q, P[5]);
-      Serial.print("4");
+   //   Serial.print("4");
 //
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
 //      Serial.print("w");Serial.print(mpu4.getQuaternion(0));Serial.print("w");
@@ -443,10 +476,10 @@ void loop()
 //
      mpu5.update();
       q.x = mpu5.getQuaternion(0);  q.y = mpu5.getQuaternion(1);  q.z = mpu5.getQuaternion(2);  q.w = mpu5.getQuaternion(3);
-      acc.x=mpu5.getAcc(0); acc.y=mpu5.getAcc(1); acc.x=mpu5.getAcc(2);
-      gyr.x=mpu5.getGyro(0); gyr.y=mpu5.getGyro(1); gyr.z=mpu5.getGyro(2);
+//      acc.x=mpu5.getAcc(0); acc.y=mpu5.getAcc(1); acc.x=mpu5.getAcc(2);
+//      gyr.x=mpu5.getGyro(0); gyr.y=mpu5.getGyro(1); gyr.z=mpu5.getGyro(2);
       sendData( acc,  gyr,   q, P[6]);
-     Serial.print("5");
+   //  Serial.print("5");
 //
 //      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
 //      Serial.print("w");Serial.print(mpu5.getQuaternion(0));Serial.print("w");
@@ -456,37 +489,37 @@ void loop()
 //
       mpu6.update();
        q.x = mpu6.getQuaternion(0);  q.y = mpu6.getQuaternion(1);  q.z = mpu6.getQuaternion(2);  q.w = mpu6.getQuaternion(3);
-       acc.x=mpu6.getAcc(0); acc.y=mpu6.getAcc(1); acc.x=mpu6.getAcc(2);
-      gyr.x=mpu6.getGyro(0); gyr.y=mpu6.getGyro(1); gyr.z=mpu6.getGyro(2);
+//       acc.x=mpu6.getAcc(0); acc.y=mpu6.getAcc(1); acc.x=mpu6.getAcc(2);
+//      gyr.x=mpu6.getGyro(0); gyr.y=mpu6.getGyro(1); gyr.z=mpu6.getGyro(2);
    sendData( acc,  gyr,   q, P[7]);
-      Serial.print("6");
+   //   Serial.print("6");
 //
 //      Serial.print("w");Serial.print(mpu6.getQuaternion(0));Serial.print("w");
 //      Serial.print("a");Serial.print(mpu6.getQuaternion(1));Serial.print("a");
 //      Serial.print("b");Serial.print(mpu6.getQuaternion(2));Serial.print("b");
 //      Serial.print("c");Serial.print(mpu6.getQuaternion(3));Serial.println("c");
 //
-       tcaselect(3);
-      mpu7.update();
+      tcaselect(3);
+       mpu7.update();
        q.x = mpu7.getQuaternion(0);  q.y = mpu7.getQuaternion(1);  q.z = mpu7.getQuaternion(2);  q.w = mpu7.getQuaternion(3);
        acc.x=mpu7.getAcc(0); acc.y=mpu7.getAcc(1); acc.x=mpu7.getAcc(2);
        gyr.x=mpu7.getGyro(0); gyr.y=mpu7.getGyro(1); gyr.z=mpu7.getGyro(2);
-   sendData( acc,  gyr,   q, P[8]);
-      Serial.print("7");
-//      
-//      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
-//      Serial.print("w");Serial.print(mpu7.getQuaternion(0));Serial.print("w");
-//      Serial.print("a");Serial.print(mpu7.getQuaternion(1));Serial.print("a");
-//      Serial.print("b");Serial.print(mpu7.getQuaternion(2));Serial.print("b");
-//      Serial.print("c");Serial.print(mpu7.getQuaternion(3));Serial.println("c");
-//
+       sendData( acc,  gyr,   q, P[8]);
+//    //  Serial.print("7");
+////      
+////      //Serial.print("t2");Serial.print(mpu2.getTemperature());Serial.print("t");
+////      Serial.print("w");Serial.print(mpu7.getQuaternion(0));Serial.print("w");
+////      Serial.print("a");Serial.print(mpu7.getQuaternion(1));Serial.print("a");
+////      Serial.print("b");Serial.print(mpu7.getQuaternion(2));Serial.print("b");
+////      Serial.print("c");Serial.print(mpu7.getQuaternion(3));Serial.println("c");
+////
       mpu8.update();
        q.x = mpu8.getQuaternion(0);  q.y = mpu8.getQuaternion(1);  q.z = mpu8.getQuaternion(2);  q.w = mpu8.getQuaternion(3);
        
        acc.x=mpu8.getAcc(0); acc.y=mpu8.getAcc(1); acc.x=mpu8.getAcc(2);
        gyr.x=mpu8.getGyro(0); gyr.y=mpu8.getGyro(1); gyr.z=mpu8.getGyro(2);
-   sendData( acc,  gyr,   q, P[9]);
-       Serial.print("8");
+       sendData( acc,  gyr,   q, P[9]);
+      // Serial.print("8");
       //tcaselect(2);
   //    mpu9.update();
 
@@ -504,6 +537,27 @@ void loop()
 //         
 //
     //Serial.print("time elapsed");Serial.println(millis() - prev_ms);
+
+
+    //Serial.println("setup MPU on second multiplexer"); 
+    tcaselect_w1(6);
+    mpu10.update();
+    q.x = mpu10.getQuaternion(0);  q.y = mpu10.getQuaternion(1);  q.z = mpu10.getQuaternion(2);  q.w = mpu10.getQuaternion(3);
+//       
+       acc.x=mpu10.getAcc(0); acc.y=mpu10.getAcc(1); acc.x=mpu10.getAcc(2);
+       gyr.x=mpu10.getGyro(0); gyr.y=mpu10.getGyro(1); gyr.z=mpu10.getGyro(2);
+   sendData( acc,  gyr,   q, P[11]);
+//
+    tcaselect_w1(7);
+    mpu11.update();
+//
+       q.x = mpu11.getQuaternion(0);  q.y = mpu11.getQuaternion(1);  q.z = mpu11.getQuaternion(2);  q.w = mpu11.getQuaternion(3);
+//       
+//       acc.x=mpu11.getAcc(0); acc.y=mpu11.getAcc(1); acc.x=mpu11.getAcc(2);
+//       gyr.x=mpu11.getGyro(0); gyr.y=mpu11.getGyro(1); gyr.z=mpu11.getGyro(2);
+   sendData( acc,  gyr,   q, P[12]);
+//    
+    
     }
 }
 }

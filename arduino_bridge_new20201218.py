@@ -7,7 +7,7 @@ from geometry_msgs.msg import Quaternion, TransformStamped, Vector3Stamped
 UDP_IP = "130.251.13.113"#"192.168.43.94" #
 UDP_PORT = 2390
 
-names = ["thumb_1","thumb_2","index_1","index_2","middle_finger_1","middle_finger_2","6","7","8","9","10","11","12","13","14","ring_finger_1","ring_finger_2","pinkie_1","pinkie_2","back","wrist"]
+names = ["thumb_1","thumb_2","index_1","index_2","middle_finger_1","middle_finger_2","6","7","8","9","10","11","12","13","14","ring_finger_1","ring_finger_2","pinkie_1","pinkie_2","back","wrist","hand2"]
 #names = ["thumb_distal","thumb_meta","index_distal","index_meta","middle_distal","middle_meta","6","7","8","9","10","11","12","13","14","ring_distal","ring_meta","pinky_distal","pinky_meta","base","wrist"]
 
 x = [0, 0.5, 1, 1.5, 1, 1.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1.5, 1, 1.5, 0, -5]
@@ -50,7 +50,7 @@ def listener():
 	listener = tf.TransformListener()
 	print ("listener initialized")
 	while not rospy.is_shutdown():
-		data = sock.recv(29)# (17) # buffer size is 1024 bytes
+		data = sock.recv(29)# (29) # buffer size is 1024 bytes
                 #print(plane_angle(plane[19][0],plane[19][1],plane[19][2],plane[2][0],plane[2][1],plane[2][2] ))
 		print("------------")
 		if not data:
@@ -76,10 +76,10 @@ def listener():
 			msg.angular_velocity.y = struct.unpack('<h', data[24:26])[0]
 			msg.angular_velocity.z = struct.unpack('<h', data[26:28])[0]      
 			#print ( "av " , msg.angular_velocity.x, );
-			t.transform.rotation.x  =  msg.orientation.x 
-			t.transform.rotation.y  =  msg.orientation.y
-			t.transform.rotation.z  =  msg.orientation.z
-			t.transform.rotation.w  =  msg.orientation.w
+			#t.transform.rotation.x  =  msg.orientation.x 
+			#t.transform.rotation.y  =  msg.orientation.y
+			#t.transform.rotation.z  =  msg.orientation.z
+			#t.transform.rotation.w  =  msg.orientation.w
 
 #			vt = tf2_geometry_msgs.do_transform_vector3(v,t)    
 #			plane[ID][0] = vt.vector.x 
