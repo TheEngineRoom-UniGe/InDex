@@ -38,7 +38,9 @@ char a = 51;
 int8_t P[12] = {0,1,2,3,4,5,15,16,17,18,19,20};
 WiFiClient client;
 unsigned int localPort = 2390;
-
+WiFiClient clientDebug;
+unsigned int debugPort = 2490;
+WiFiUDP udpDebug; 
 
 typedef union {
  float floatingPoint[4];
@@ -108,6 +110,9 @@ class WiFiHardware {
   void init() {
     // do your initialization here. this probably includes TCP server/client setup
     client.connect(server, 11411);
+
+    
+    
   }
 
   // read a byte from the serial port. -1 = failure
@@ -201,13 +206,16 @@ geometry_msgs::Vector3 acc;
 geometry_msgs::Vector3 gyr;
 geometry_msgs::Quaternion q;
 void setup()
-{   pinMode(D2,INPUT);
+{  
+    pinMode(D2,INPUT);
     pinMode(D3,OUTPUT); 
     pinMode(D9,OUTPUT);  // LED PIN
     digitalWrite(D3,HIGH);
     EEPROM.begin(512); // otherwise it wont write
     Serial.begin(115200);  
     setupWiFi();
+    clientDebug.connect(server,11511); // new debug port
+    
     Serial.println("Here I Am");
     for (int i =0;i <5;i ++)
     {
@@ -229,7 +237,7 @@ void setup()
     Wire.setClock(400000);
 
     delay(1000);
-    //tcaselect(6);Serial.println("scanning channel 6"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
+    tcaselect(6);Serial.println("scanning channel 6"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
     i2cTest();
 //    tcaselect(5);Serial.println("scanning channel 5"); // 7 thumb //2 local / arm // 6 index ,5 middle, 4 ring, 3 pinky
 //    i2cTest();
@@ -241,17 +249,30 @@ void setup()
 //    i2cTest();
     
     delay(1000);
-   // tcaselect(6);
+    tcaselect(6);
     mpu.setup();
 
     delay(500);
   
     int b = digitalRead(D2);
+    b = 0; // dummy input
     Serial.print("short D2 and D3 to calibrate , D2 is : " );Serial.println (b);; 
 if (b >0)
     {
       mpu.calibrateAccelGyro();
+      const  unsigned char  msg[10]= "Calibrate";
+      udpDebug.beginPacket(server, debugPort);
+      udpDebug.write(msg, 10);
+      udpDebug.endPacket();  
+      digitalWrite(LED_BUILTIN, HIGH); 
+      delay(100);
+      digitalWrite(LED_BUILTIN, LOW); 
+      delay(100);
+      digitalWrite(LED_BUILTIN, HIGH); 
+      delay(100);
+      digitalWrite(LED_BUILTIN, LOW); 
       mpu.calibrateMag();
+      digitalWrite(LED_BUILTIN, HIGH); 
 
 //    // save to eeprom
       saveCalibration(true);
@@ -266,10 +287,20 @@ else {
      
     if ((a == 'C'))
     {
+
+  
        // calibrate when you want to
     mpu.calibrateAccelGyro();
+    digitalWrite(LED_BUILTIN, HIGH); 
+    delay(100);
+    digitalWrite(LED_BUILTIN, LOW); 
+    delay(100);
+     digitalWrite(LED_BUILTIN, HIGH); 
+    delay(100);
+    digitalWrite(LED_BUILTIN, LOW); 
+    
     mpu.calibrateMag();
-
+    digitalWrite(LED_BUILTIN, HIGH); 
 //    // save to eeprom
     saveCalibration(true);
 //
@@ -279,10 +310,30 @@ else {
     }
     //    // load from eeprom
     loadCalibration();
-   // mpu.calibrateAccelGyro();
+    mpu.calibrateAccelGyro();
     printCalibration();
     }
-       
+ // clearCalibration();       // TODO REMOVE
+//  mpu.setAccBias(0, 55.05 /1000);
+//  mpu.setAccBias(1, 23.56 /1000);
+//  mpu.setAccBias(2, 35.40 /1000);
+//  mpu.setGyroBias(0, -0.66);
+//  mpu.setGyroBias(1,  0.09);
+//  mpu.setGyroBias(2, -1.63);
+//  mpu.setMagScale(0,0.97);
+//  mpu.setMagScale(1,1.08);
+//  mpu.setMagScale(2,0.96);
+
+
+//gyro bias x : -0.66
+//gyro bias y : 0.09
+//gyro bias z : -1.63
+//mag bias x  : 153.63
+//mag bias y  : 48.39
+//mag bias z  : 1.73
+//mag scale x : 0.97
+//mag scale y : 1.08
+//mag scale z : 0.96
 
 }
 
@@ -290,9 +341,9 @@ void loop()
 {
     digitalWrite(LED_BUILTIN, HIGH); 
     static uint32_t prev_ms = millis();
-    if ((millis() - prev_ms) > 1)
+    if ((millis() - prev_ms) > 20)
       {
-     //   tcaselect(6);
+        tcaselect(6);
        // delay(5); // with 10, 20 ms , works fine , always updating ,visualised using teapot // 10 ms seems more stable (26fps with teapot)
         mpu.update();
    //     mpu.printRawData();
