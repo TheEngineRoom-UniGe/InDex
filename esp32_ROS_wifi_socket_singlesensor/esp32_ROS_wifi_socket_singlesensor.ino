@@ -306,11 +306,15 @@ else {
 //
 
     }
-    
+    else {
+          //    // load from eeprom
+   
+      loadCalibration();
+    //  mpu.calibrateAccelGyro();
     }
-    //    // load from eeprom
-    loadCalibration();
-    mpu.calibrateAccelGyro();
+    }
+
+    
     printCalibration();
     }
  // clearCalibration();       // TODO REMOVE
@@ -346,7 +350,10 @@ void loop()
         tcaselect(6);
        // delay(5); // with 10, 20 ms , works fine , always updating ,visualised using teapot // 10 ms seems more stable (26fps with teapot)
         mpu.update();
-   //     mpu.printRawData();
+       // mpu.printRawData();
+//      Serial.print("pitch");Serial.println(mpu.getPitch()); 
+//      Serial.print("roll");Serial.println(mpu.getRoll()); 
+      
       //Serial.print(mpu.getTemperature());
       // the below code works with the PYteapot .
       // to read the temperature , we have set the AHRS to false
@@ -359,6 +366,7 @@ void loop()
    q.x = mpu.getQuaternion(0);  q.y = mpu.getQuaternion(1);  q.z = mpu.getQuaternion(2);  q.w = mpu.getQuaternion(3);
    acc.x = mpu.getAcc(0); acc.y = mpu.getAcc(1); acc.x = mpu.getAcc(2);
     gyr.x = mpu.getGyro(0); gyr.y = mpu.getGyro(1); gyr.z = mpu.getGyro(2);
+    
    sendData( acc,  gyr,   q, P[1]);
 
     }
