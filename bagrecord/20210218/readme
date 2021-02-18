@@ -1,0 +1,4 @@
+The following rosbag 2021-02-18-10-42-15.bag, contains data from two topics
+screenshot.png , shows the different of axes between Mocap and IMU frame
+IMU topic: /thumb_2Pose
+Mocap topic: /Robot_1/pose
