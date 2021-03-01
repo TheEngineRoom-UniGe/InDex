@@ -243,7 +243,7 @@ void setup()
     
     Serial.println("I am Ready for I2C");
     //DEFAULT ADDRESS 0X68
-    Wire.begin();
+    Wire.begin(0x68);
     Wire.setClock(400000);
 
     Wire1.begin (D7,D8,400000);  // Data , clock ,frequency 
