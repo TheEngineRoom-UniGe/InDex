@@ -1,7 +1,8 @@
 import rospy, tf, struct, socket, math
 #import tf2_geometry_msgs
 from sensor_msgs.msg import Imu
-from geometry_msgs.msg import Quaternion, TransformStamped, Vector3Stamped
+
+from geometry_msgs.msg import Quaternion, TransformStamped, Vector3Stamped, PoseStamped
 
 
 UDP_IP = "130.251.13.113"#"192.168.43.94" #
@@ -81,7 +82,14 @@ def listener():
 			#t.transform.rotation.y  =  msg.orientation.y
 			#t.transform.rotation.z  =  msg.orientation.z
 			#t.transform.rotation.w  =  msg.orientation.w
-
+			msg2 = PoseStamped(); 
+			msg2.header.frame_id='base_link'
+			msg2.header.stamp = msg.header.stamp;
+			msg2.pose.orientation = msg.orientation; 
+			msg2.pose.position.x = 0 ; 
+			msg2.pose.position.y = 0; 
+			msg2.pose.position.z = 0; 
+			
 #			vt = tf2_geometry_msgs.do_transform_vector3(v,t)    
 #			plane[ID][0] = vt.vector.x 
 #			plane[ID][1] = vt.vector.y
@@ -124,6 +132,8 @@ def listener():
 		#	print ("msg received");
 			pub = rospy.Publisher(names[ID], Imu, queue_size=0)
 			pub.publish(msg)
+			pub2 = rospy.Publisher(names[ID]+"Pose", PoseStamped, queue_size=0)
+			pub2.publish (msg2)
 
 
 def print_to_socket(msg): 

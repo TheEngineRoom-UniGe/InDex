@@ -20,15 +20,18 @@
 //
 //
 // ADC on 4D address 
-MPU9250_DMP mpu; 
-MPU9250_DMP mpu2,mpu3,mpu4,mpu5, mpu6, mpu7, mpu8, mpu9,mpu10,mpu11; 
+MPU9250_DMP mpu(0x68); 
+MPU9250_DMP mpu2(0x69);
+//MPU9250_DMP mpu3,mpu4,mpu5, mpu6, mpu7, mpu8, mpu9,mpu10,mpu11; 
 
-const char* ssid ="Vodafone-A61704731";// "EmaroLab-WiFi";
-const char* password = "2910Santiago@";//"walkingicub";
+const char* ssid = "EmaroLab-WiFi";//"Vodafone-A61704731";//
+const char* password = "walkingicub";//"2910Santiago@";//
 IPAddress server (130, 251, 13, 113); //(192,168,43,94);//// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
 char a = 51;
+unsigned char addr = 100; 
+
 int8_t P[12] = {0,1,2,3,4,5,15,16,17,18,19,20};
 WiFiClient client;
 unsigned int localPort = 2390;
@@ -231,6 +234,8 @@ void scanW1(){ //to scan on I2C Wire, special pins
 
 void setup()
 {  
+//
+
 //    pinMode(D2,INPUT); for the cube pin
 //    pinMode(D3,OUTPUT); for the cube pins
   //  pinMode(D9,OUTPUT);  // LED PIN // LED_BUILTIN
@@ -272,8 +277,10 @@ void setup()
     delay (1000); 
     //Serial.println("I am Ready for I2C");
     //DEFAULT ADDRESS 0X68
+
     tcaselect(6);
-    if (mpu.begin(0x68) != INV_SUCCESS)
+    //Serial.println (mpu.getAddr());
+    if (mpu.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -290,7 +297,7 @@ void setup()
   // DMP_FEATURE_LP_QUAT can also be used. It uses the 
   // accelerometer in low-power mode to estimate quat's.
   // DMP_FEATURE_LP_QUAT and 6X_LP_QUAT are mutually exclusive
-     if (mpu2.begin(0x69) != INV_SUCCESS)
+     if (mpu2.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -302,113 +309,113 @@ void setup()
     mpu2.dmpBegin(DMP_FEATURE_6X_LP_QUAT | // Enable 6-axis quat
                DMP_FEATURE_GYRO_CAL, // Use gyro calibration
               200);}
-  //////////////////////////////////// 
-    tcaselect(5);
-    if (mpu3.begin(0x68) != INV_SUCCESS)
-  {
-   // while (1)
-    {
-      Serial.println("Unable to communicate with MPU-9250");
-      delay(1000);
-    }
-  }
-  else{
-    mpu3.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
-  }
-  
-     if (mpu4.begin(0x69) != INV_SUCCESS)
-  {
-   // while (1)
-    {
-      Serial.println("Unable to communicate with MPU-9250");
-
-      delay(1000);
-    }
-  }
-  else {
-    mpu4.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
-  }
-  //////////////////////////////
-    tcaselect(4);
-    if (mpu5.begin(0x68) != INV_SUCCESS)
-  {
-   // while (1)
-    {
-      Serial.println("Unable to communicate with MPU-9250");
-      delay(1000);
-    }
-  }
-  else{
-    mpu5.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
-  }
-  
-     if (mpu6.begin(0x69) != INV_SUCCESS)
-  {
-   // while (1)
-    {
-      Serial.println("Unable to communicate with MPU-9250");
-
-      delay(1000);
-    }
-  }
-  else {
-    mpu6.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
-  }
-
-  //////////////////////////////
-    tcaselect(3);
-    if (mpu7.begin(0x68) != INV_SUCCESS)
-  {
-   // while (1)
-    {
-      Serial.println("Unable to communicate with MPU-9250");
-      delay(1000);
-    }
-  }
-  else{
-    mpu7.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
-  }
-  
-     if (mpu8.begin(0x69) != INV_SUCCESS)
-  {
-   // while (1)
-    {
-      Serial.println("Unable to communicate with MPU-9250");
-
-      delay(1000);
-    }
-  }
-  else {
-    mpu8.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
-  }
-
-
-  //////////////////////////////
-    tcaselect(2);
-    if (mpu9.begin(0x68) != INV_SUCCESS)
-  {
-   // while (1)
-    {
-      Serial.println("Unable to communicate with MPU-9250");
-      delay(1000);
-    }
-  }
-  else{
-    mpu9.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
-  }
-  
-     if (mpu10.begin(0x69) != INV_SUCCESS)
-  {
-   // while (1)
-    {
-      Serial.println("Unable to communicate with MPU-9250");
-
-      delay(1000);
-    }
-  }
-  else {
-    mpu10.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
-  }
+//  //////////////////////////////////// 
+//    tcaselect(5);
+//    if (mpu3.begin(0x68) != INV_SUCCESS)
+//  {
+//   // while (1)
+//    {
+//      Serial.println("Unable to communicate with MPU-9250");
+//      delay(1000);
+//    }
+//  }
+//  else{
+//    mpu3.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
+//  }
+//  
+//     if (mpu4.begin(0x69) != INV_SUCCESS)
+//  {
+//   // while (1)
+//    {
+//      Serial.println("Unable to communicate with MPU-9250");
+//
+//      delay(1000);
+//    }
+//  }
+//  else {
+//    mpu4.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
+//  }
+//  //////////////////////////////
+//    tcaselect(4);
+//    if (mpu5.begin(0x68) != INV_SUCCESS)
+//  {
+//   // while (1)
+//    {
+//      Serial.println("Unable to communicate with MPU-9250");
+//      delay(1000);
+//    }
+//  }
+//  else{
+//    mpu5.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
+//  }
+//  
+//     if (mpu6.begin(0x69) != INV_SUCCESS)
+//  {
+//   // while (1)
+//    {
+//      Serial.println("Unable to communicate with MPU-9250");
+//
+//      delay(1000);
+//    }
+//  }
+//  else {
+//    mpu6.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
+//  }
+//
+//  //////////////////////////////
+//    tcaselect(3);
+//    if (mpu7.begin(0x68) != INV_SUCCESS)
+//  {
+//   // while (1)
+//    {
+//      Serial.println("Unable to communicate with MPU-9250");
+//      delay(1000);
+//    }
+//  }
+//  else{
+//    mpu7.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
+//  }
+//  
+//     if (mpu8.begin(0x69) != INV_SUCCESS)
+//  {
+//   // while (1)
+//    {
+//      Serial.println("Unable to communicate with MPU-9250");
+//
+//      delay(1000);
+//    }
+//  }
+//  else {
+//    mpu8.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
+//  }
+//
+//
+//  //////////////////////////////
+//    tcaselect(2);
+//    if (mpu9.begin(0x68) != INV_SUCCESS)
+//  {
+//   // while (1)
+//    {
+//      Serial.println("Unable to communicate with MPU-9250");
+//      delay(1000);
+//    }
+//  }
+//  else{
+//    mpu9.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
+//  }
+//  
+//     if (mpu10.begin(0x69) != INV_SUCCESS)
+//  {
+//   // while (1)
+//    {
+//      Serial.println("Unable to communicate with MPU-9250");
+//
+//      delay(1000);
+//    }
+//  }
+//  else {
+//    mpu10.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
+//  }
 
    
 
@@ -464,9 +471,49 @@ void loop()
     }
     else {Serial.println("Data INV_SUCCESS failed ");Serial.print(res); }
   }
-  else {Serial.println("Data fifoNot Available");}
+  else {Serial.println("Data fifo Not Available");}
   
 }
+
+          if ( mpu2.fifoAvailable() )
+  {
+    
+    // Use dmpUpdateFifo to update the ax, gx, mx, etc. values
+
+    int res = mpu2.dmpUpdateFifo();
+    if (res == INV_SUCCESS)
+    {
+      // computeEulerAngles can be used -- after updating the
+      // quaternion values -- to estimate roll, pitch, and yaw
+  //    mpu.computeEulerAngles();
+      
+      float q0 = mpu2.calcQuat(mpu2.qw);
+      float q1 = mpu2.calcQuat(mpu2.qx);
+      float q2 = mpu2.calcQuat(mpu2.qy);
+      float q3 = mpu2.calcQuat(mpu2.qz);
+      Serial.print("w2;");Serial.print(q0);Serial.print("w");
+      Serial.print("a2;");Serial.print(q1);Serial.print("a");
+      Serial.print("b2;");Serial.print(q2);Serial.print("b");
+      Serial.print("c2;");Serial.print(q3);Serial.println("c");
+      
+   //q.x = mpu.getQuaternion(0);  q.y = mpu.getQuaternion(1);  q.z = mpu.getQuaternion(2);  q.w = mpu.getQuaternion(3);
+//    acc.x = mpu.getAcc(0); acc.y = mpu.getAcc(1); acc.x = mpu.getAcc(2);
+//    gyr.x = mpu.getGyro(0); gyr.y = mpu.getGyro(1); gyr.z = mpu.getGyro(2);
+//    
+    q.x = q1 ; q.y = q2 ; q.z = q3 ; q.w = q0; 
+   // acc.x = mpu.getAcc(0); acc.y = mpu.getAcc(1); acc.x = mpu.getAcc(2);
+    //gyr.x = mpu.getGyro(0); gyr.y = mpu.getGyro(1); gyr.z = mpu.getGyro(2);
+   sendData( acc,  gyr,   q, P[2]);
+
+
+      
+     // printIMUData();
+    }
+    else {Serial.println("Data INV_SUCCESS failed ");Serial.print(res); }
+  }
+  else {Serial.println("Data fifo Not Available");}
+  
+
         
         
  //       mpu.update();
