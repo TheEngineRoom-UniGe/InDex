@@ -22,8 +22,8 @@
 // ADC on 4D address 
 MPU9250_DMP mpu; 
 
-const char* ssid = "EmaroLab-WiFi";
-const char* password = "walkingicub";
+const char* ssid ="Vodafone-A61704731";// "EmaroLab-WiFi";
+const char* password = "2910Santiago@";//"walkingicub";
 IPAddress server (130, 251, 13, 113); //(192,168,43,94);//// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
@@ -200,15 +200,15 @@ geometry_msgs::Vector3 gyr;
 geometry_msgs::Quaternion q;
 void setup()
 {  
-    pinMode(D2,INPUT);
-    pinMode(D3,OUTPUT); 
-    pinMode(D9,OUTPUT);  // LED PIN
-    digitalWrite(D3,HIGH);
+//    pinMode(D2,INPUT);
+//    pinMode(D3,OUTPUT); 
+//    pinMode(D9,OUTPUT);  // LED PIN
+  pinMode(LED_BUILTIN,OUTPUT);
+//    digitalWrite(D3,HIGH);
   //  EEPROM.begin(512); // otherwise it wont write
     Serial.begin(115200);  
     setupWiFi();
     clientDebug.connect(server,11511); // new debug port
-    
     Serial.println("Here I Am");
     for (int i =0;i <5;i ++)
     {
@@ -216,17 +216,22 @@ void setup()
     delay(500);  
     digitalWrite(LED_BUILTIN, LOW); 
     delay(200);  
-   // digitalWrite(LED_BUILTIN, HIGH); 
-    digitalWrite(D9, HIGH); 
+    digitalWrite(LED_BUILTIN, HIGH); 
+ //   digitalWrite(D9, HIGH); 
     // does not work when on usb
     }
+    Wire.begin();
+    i2cTest(); 
+    Wire.end(); 
+    
+    
     acc.x = 0;  acc.y = 0;  acc.z =0; gyr.x = 0;  gyr.y =0;  gyr.z = 0;
 
 
 
     //Serial.println("I am Ready for I2C");
     //DEFAULT ADDRESS 0X68
-    if (mpu.begin() != INV_SUCCESS)
+    if (mpu.begin(0x68) != INV_SUCCESS)
   {
     while (1)
     {

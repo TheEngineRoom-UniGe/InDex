@@ -23,8 +23,8 @@
 MPU9250_DMP mpu; 
 MPU9250_DMP mpu2,mpu3,mpu4,mpu5, mpu6, mpu7, mpu8, mpu9,mpu10,mpu11; 
 
-const char* ssid = "EmaroLab-WiFi";
-const char* password = "walkingicub";
+const char* ssid ="Vodafone-A61704731";// "EmaroLab-WiFi";
+const char* password = "2910Santiago@";//"walkingicub";
 IPAddress server (130, 251, 13, 113); //(192,168,43,94);//// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
@@ -239,6 +239,9 @@ void setup()
   //  EEPROM.begin(512); // otherwise it wont write
     Serial.begin(115200);  
     setupWiFi();
+    Wire.begin();
+    //Wire.setClock(400000);
+
     //clientDebug.connect(server,11511); // new debug port
 //    Wire1.begin (D7,D8,400000);  // Data , clock ,frequency 
 //
@@ -419,7 +422,7 @@ void loop()
     static uint32_t prev_ms = millis();
     if ((millis() - prev_ms) > 20)
       {
-        
+      // Serial.println("looping");
         
         
         tcaselect(6);
@@ -427,8 +430,11 @@ void loop()
        // delay(5); // with 10, 20 ms , works fine , always updating ,visualised using teapot // 10 ms seems more stable (26fps with teapot)
           if ( mpu.fifoAvailable() )
   {
+    
     // Use dmpUpdateFifo to update the ax, gx, mx, etc. values
-    if ( mpu.dmpUpdateFifo() == INV_SUCCESS)
+
+    int res = mpu.dmpUpdateFifo();
+    if (res == INV_SUCCESS)
     {
       // computeEulerAngles can be used -- after updating the
       // quaternion values -- to estimate roll, pitch, and yaw
@@ -456,7 +462,10 @@ void loop()
       
      // printIMUData();
     }
+    else {Serial.println("Data INV_SUCCESS failed ");Serial.print(res); }
   }
+  else {Serial.println("Data fifoNot Available");}
+  
 }
         
         
