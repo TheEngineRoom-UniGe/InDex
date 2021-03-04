@@ -5,13 +5,19 @@ quaternion or yaw, pitch, roll angles received over serial port.
 
 import pygame
 import math
+import time
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from pygame.locals import *
 import sys
-useSerial = True # set true for using serial for data transmission, false for wifi
+useSerial = False # set true for using serial for data transmission, false for wifi
 useQuat = True   # set true for using quaternions, false for using y,p,r angles
 serialPortName='/dev/ttyUSB0' 
+yaw1 = 0
+pitch1 = 0
+roll1 = 0
+y0=p0=r0=0
+firstTime=True
 if (len (sys.argv) >1):
 	serialPortName=sys.argv[1];
 if(useSerial):
@@ -27,6 +33,7 @@ else:
                          socket.SOCK_DGRAM) # UDP
     sock.bind((UDP_IP, UDP_PORT))
     print ("socket created")
+    print (time.localtime());
 def main():
     video_flags = OPENGL | DOUBLEBUF
     pygame.init()
@@ -36,6 +43,10 @@ def main():
     init()
     frames = 0
     ticks = pygame.time.get_ticks()
+    print(time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
+    #### TODO first time get y0,p0,r0 as initial position to compare with
+
+  
     while 1:
         event = pygame.event.poll()
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -48,9 +59,12 @@ def main():
             draw(w, nx, ny, nz)
         else:
             draw(1, yaw, pitch, roll)
+            
         pygame.display.flip()
         frames += 1
+        
     print("fps: %d" % ((frames*1000)/(pygame.time.get_ticks()-ticks)))
+
     ser.close()
 
 
@@ -75,7 +89,7 @@ def init():
     glEnable(GL_DEPTH_TEST)
     glDepthFunc(GL_LEQUAL)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
-
+	
 
 def cleanSerialBegin():
     if(useQuat):
@@ -103,12 +117,12 @@ def read_data():
             ser.reset_input_buffer()
             cleanSerialBegin()
             line = ser.readline().decode('UTF-8').replace('\n', '')
-            print(line)
+          #  print(line)
         else:
             # Waiting for data from udp port 5005
             data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
             line = data.decode('UTF-8').replace('\n', '')
-            print(line)
+           # print(line)
                     
         if(useQuat):
             w = float(line.split('w')[1])
@@ -125,6 +139,7 @@ def read_data():
         pass
 
 def draw(w, nx, ny, nz):
+    global yaw1,pitch1,roll1,firstTime,y0,p0,r0
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     glTranslatef(0, 0.0, -7.0)
@@ -183,7 +198,15 @@ def draw(w, nx, ny, nz):
     glVertex3f(1.0, -0.2, 1.0)
     glVertex3f(1.0, -0.2, -1.0)
     glEnd()
+    if (firstTime): 
+    	y0=yaw;p0 = pitch; r0=roll;
+    	firstTime=False
+    	print ("first time") ;
+    if ((yaw1 !=yaw) or (pitch1 != pitch ) or (roll1 !=roll)):
 
+        	print ((time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())) , " dy: %d dp: %d dr:%d " %((yaw1-yaw),(pitch1-pitch),(roll1-roll)) )
+        	print ("Difference with initial frame dy0: %d dp0: %d dr0:%d " %((y0-yaw),(p0-pitch),(r0-roll)) )
+        	yaw1=yaw ; pitch1=pitch ; roll1=roll;
 
 def drawText(position, textString, size):
     font = pygame.font.SysFont("Courier", size, True)

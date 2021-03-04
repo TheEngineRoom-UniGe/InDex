@@ -7,6 +7,7 @@
 #include <std_msgs/Header.h>
 #include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/Quaternion.h>
+#include <geometry_msgs/Pose.h>
 #include <WiFi.h>
 #include <std_msgs/String.h>
 #include "eeprom_utils.h"
@@ -308,16 +309,16 @@ else {
     }
     else {
           //    // load from eeprom
-   
+     // clearCalibration();       // TODO REMOVE
       loadCalibration();
-    //  mpu.calibrateAccelGyro();
+      mpu.calibrateAccelGyro();
     }
     }
 
     
     printCalibration();
     }
- // clearCalibration();       // TODO REMOVE
+ 
 //  mpu.setAccBias(0, 55.05 /1000);
 //  mpu.setAccBias(1, 23.56 /1000);
 //  mpu.setAccBias(2, 35.40 /1000);
