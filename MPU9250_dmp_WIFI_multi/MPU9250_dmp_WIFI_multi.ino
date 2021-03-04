@@ -20,8 +20,8 @@
 //
 //
 // ADC on 4D address 
-MPU9250_DMP mpu; 
-MPU9250_DMP mpu2,mpu3,mpu4,mpu5, mpu6, mpu7, mpu8, mpu9,mpu10,mpu11; 
+MPU9250_DMP mpu(0); 
+MPU9250_DMP mpu2(1),mpu3(0),mpu4(1),mpu5(0), mpu6(1), mpu7(0), mpu8(1), mpu9(0),mpu10(1),mpu11(0); 
 
 const char* ssid ="Vodafone-A61704731";// "EmaroLab-WiFi";
 const char* password = "2910Santiago@";//"walkingicub";
@@ -273,7 +273,7 @@ void setup()
     //Serial.println("I am Ready for I2C");
     //DEFAULT ADDRESS 0X68
     tcaselect(6);
-    if (mpu.begin(0x68) != INV_SUCCESS)
+    if (mpu.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -290,7 +290,7 @@ void setup()
   // DMP_FEATURE_LP_QUAT can also be used. It uses the 
   // accelerometer in low-power mode to estimate quat's.
   // DMP_FEATURE_LP_QUAT and 6X_LP_QUAT are mutually exclusive
-     if (mpu2.begin(0x69) != INV_SUCCESS)
+     if (mpu2.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -304,7 +304,7 @@ void setup()
               200);}
   //////////////////////////////////// 
     tcaselect(5);
-    if (mpu3.begin(0x68) != INV_SUCCESS)
+    if (mpu3.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -316,7 +316,7 @@ void setup()
     mpu3.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
   }
   
-     if (mpu4.begin(0x69) != INV_SUCCESS)
+     if (mpu4.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -330,7 +330,7 @@ void setup()
   }
   //////////////////////////////
     tcaselect(4);
-    if (mpu5.begin(0x68) != INV_SUCCESS)
+    if (mpu5.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -342,7 +342,7 @@ void setup()
     mpu5.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
   }
   
-     if (mpu6.begin(0x69) != INV_SUCCESS)
+     if (mpu6.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -357,7 +357,7 @@ void setup()
 
   //////////////////////////////
     tcaselect(3);
-    if (mpu7.begin(0x68) != INV_SUCCESS)
+    if (mpu7.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -369,7 +369,7 @@ void setup()
     mpu7.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
   }
   
-     if (mpu8.begin(0x69) != INV_SUCCESS)
+     if (mpu8.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -385,7 +385,7 @@ void setup()
 
   //////////////////////////////
     tcaselect(2);
-    if (mpu9.begin(0x68) != INV_SUCCESS)
+    if (mpu9.begin() != INV_SUCCESS)
   {
    // while (1)
     {
@@ -397,7 +397,7 @@ void setup()
     mpu9.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
   }
   
-     if (mpu10.begin(0x69) != INV_SUCCESS)
+     if (mpu10.begin() != INV_SUCCESS)
   {
    // while (1)
     {
