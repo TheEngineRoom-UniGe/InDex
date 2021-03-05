@@ -130,8 +130,8 @@ def listener():
 			#print(plane)
 			#br.sendTransform((0.0, 0.0, 0.0), tf.transformations.quaternion_from_euler(0, 0, 1.57), rospy.Time.now(), "root_rotated", "root")
 		#	print ("msg received");
-			pub = rospy.Publisher(names[ID], Imu, queue_size=0)
-			pub.publish(msg)
+		#	pub = rospy.Publisher(names[ID], Imu, queue_size=0)
+		#	pub.publish(msg)
 			pub2 = rospy.Publisher(names[ID]+"Pose", PoseStamped, queue_size=0)
 			pub2.publish (msg2)
 
