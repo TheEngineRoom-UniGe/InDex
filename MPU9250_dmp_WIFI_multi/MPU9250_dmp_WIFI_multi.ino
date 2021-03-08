@@ -23,6 +23,10 @@
 MPU9250_DMP mpu(0x68); 
 MPU9250_DMP mpu2(0x69);
 MPU9250_DMP mpu3(0x68),mpu4(0x69),mpu5(0x68), mpu6(0x69), mpu7(0x68), mpu8(0x69), mpu9(0x68),mpu10(0x69),mpu11(0x68); 
+
+//MPU9250_DMP mpu(0); 
+//MPU9250_DMP mpu2(1);
+//MPU9250_DMP mpu3(0),mpu4(1),mpu5(0), mpu6(1), mpu7(0), mpu8(1), mpu9(0),mpu10(1),mpu11(0); 
 // TODO 
 const char* ssid = "EmaroLab-WiFi";
 const char* password = "walkingicub"; 
