@@ -412,12 +412,12 @@ void loop()
 {
     digitalWrite(LED_BUILTIN, HIGH); 
     static uint32_t prev_ms = millis();
-    if ((millis() - prev_ms) > 20)
+    if ((millis() - prev_ms) > 10)
       {
       // Serial.println("looping");
         
 tcaselect(6);
-// delay(5); // with 10, 20 ms , works fine , always updating ,visualised using teapot // 10 ms seems more stable (26fps with teapot)
+// delay(5); // with 10, 20 ms , works fine , always updating ,visualised using teapot // 10 ms seems more stable (26fps with teapot non-dmp library)
 if ( mpu.fifoAvailable() )
   {
   //  Serial.println("address from C lib");Serial.print(mpu_get_addr());
@@ -571,7 +571,7 @@ if ( mpu5.fifoAvailable() )
   }
  // else {Serial.println("Data fifo Not Available mpu5");
   //}
-  //// MPU6
+  //// MPU6   // adding sixth sensor, everything stopped with DMP channel
 //if ( mpu6.fifoAvailable() )
 //  {
 //  //  Serial.println("address from C lib");Serial.print(mpu_get_addr());
@@ -590,12 +590,12 @@ if ( mpu5.fifoAvailable() )
 //   sendData( acc,  gyr,   q, P[7]);
 //
 //    }
-  //  else {Serial.println("Data INV_SUCCESS failed mpu6 ");}
-  }
- // else {Serial.println("Data fifo Not Available mpu6");
-  //Serial.println("address from C lib");Serial.print(mpu_get_addr());
-  //}
-//
+//  //  else {Serial.println("Data INV_SUCCESS failed mpu6 ");}
+//  }
+// // else {Serial.println("Data fifo Not Available mpu6");
+//  //Serial.println("address from C lib");Serial.print(mpu_get_addr());
+//  }
+////
 //      
 //////////////////////////////////////////
 // tcaselect(3);
@@ -649,7 +649,7 @@ if ( mpu5.fifoAvailable() )
 //  //Serial.println("address from C lib");Serial.print(mpu_get_addr());
 //  }
 
-//  }
+  }
 } // LOOP 
   
         

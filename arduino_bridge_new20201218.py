@@ -89,7 +89,7 @@ def listener():
 			msg2.pose.position.x = 0 ; 
 			msg2.pose.position.y = 0; 
 			msg2.pose.position.z = 0; 
-			
+
 #			vt = tf2_geometry_msgs.do_transform_vector3(v,t)    
 #			plane[ID][0] = vt.vector.x 
 #			plane[ID][1] = vt.vector.y
