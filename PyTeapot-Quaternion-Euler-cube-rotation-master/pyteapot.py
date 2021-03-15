@@ -10,8 +10,8 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from pygame.locals import *
 import sys
-useSerial = False # set true for using serial for data transmission, false for wifi
-useQuat = True   # set true for using quaternions, false for using y,p,r angles
+useSerial = True # set true for using serial for data transmission, false for wifi
+useQuat = True	   # set true for using quaternions, false for using y,p,r angles
 serialPortName='/dev/ttyUSB0' 
 yaw1 = 0
 pitch1 = 0

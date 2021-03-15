@@ -23,7 +23,7 @@
 MPU9250_DMP mpu(0x68); 
 MPU9250_DMP mpu2(0x69);
 MPU9250_DMP mpu3(0x68),mpu4(0x69),mpu5(0x68), mpu6(0x69), mpu7(0x68), mpu8(0x69), mpu9(0x68),mpu10(0x69),mpu11(0x68); 
-
+boolean err [12] = {0};
 //MPU9250_DMP mpu(0); 
 //MPU9250_DMP mpu2(1);
 //MPU9250_DMP mpu3(0),mpu4(1),mpu5(0), mpu6(1), mpu7(0), mpu8(1), mpu9(0),mpu10(1),mpu11(0); 
@@ -245,7 +245,7 @@ void setup()
     Serial.begin(115200);  
     setupWiFi();
     Wire.begin();
-    Wire.setClock(400000);
+    //Wire.setClock(400000);
 
     //clientDebug.connect(server,11511); // new debug port
 //    Wire1.begin (D7,D8,400000);  // Data , clock ,frequency 
@@ -310,11 +310,15 @@ else {
   200);}
   //////////////////////////////////// 
     delay (10);
+   
+    
+//    
     tcaselect(5);
     if (mpu3.begin() != INV_SUCCESS)
   {
    // while (1)
     {
+      err[3-1]=0;
       Serial.println("Unable to communicate with MPU-9250"); delay(1000);
     }
   }
@@ -330,30 +334,35 @@ else {
   else {
     mpu4.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
   }
-  //////////////////////////////
-delay (10);
-tcaselect(4);
-if (mpu5.begin() != INV_SUCCESS)
-  {
-   // while (1)
-      Serial.println("Unable to communicate with MPU-9250"); delay(1000);
-  }
-else{
-    mpu5.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
-  }
-  
-if (mpu6.begin() != INV_SUCCESS)
-  {
-   // while (1)
-      Serial.println("Unable to communicate with MPU-9250"); delay(1000);
-  }
-else {
-    mpu6.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
-  }
-  
+//  //////////////////////////////
+//delay (10);
+
+
+
+//tcaselect(4);
+//if (mpu5.begin() != INV_SUCCESS)
+//  {
+//   // while (1)
+//      Serial.println("Unable to communicate with MPU-9250"); delay(1000);
+//  }
+//else{
+//    mpu5.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
+//  }
+//  
+//if (mpu6.begin() != INV_SUCCESS)
+//  {
+//   // while (1)
+//      Serial.println("Unable to communicate with MPU-9250"); delay(1000);
+//  }
+//else {
+//    mpu6.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
+//  }
+//  
+////
+//  //////////////////////////////
+//delay (10);
 //
-  //////////////////////////////
-delay (10);
+//
 //tcaselect(3);
 //    if (mpu7.begin() != INV_SUCCESS)
 //  {
@@ -366,7 +375,7 @@ delay (10);
 //  else{
 //    mpu7.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
 //  }
-  
+//  
 //     if (mpu8.begin() != INV_SUCCESS)
 //  {
 //   // while (1)
@@ -379,8 +388,8 @@ delay (10);
 //  else {
 //    mpu8.dmpBegin(DMP_FEATURE_6X_LP_QUAT |  DMP_FEATURE_GYRO_CAL, 200); // Set DMP FIFO rate to 200 Hz
 //  }
-//
-//
+
+
 //  //////////////////////////////
 //    tcaselect(2);
 //    if (mpu9.begin() != INV_SUCCESS)
@@ -413,10 +422,11 @@ delay (10);
 }
 
 void loop()
+// question TODO, can we use just two variables???
 {
     digitalWrite(LED_BUILTIN, HIGH); 
     static uint32_t prev_ms = millis();
-    if ((millis() - prev_ms) > 10)
+    //if ((millis() - prev_ms) > 10)
       {
       // Serial.println("looping");
         
@@ -453,11 +463,11 @@ if ( mpu.fifoAvailable() )
       
      // printIMUData();
     }
-    else {Serial.println("Data INV_SUCCESS failed ");Serial.print(res); }
+   // else {Serial.println("Data INV_SUCCESS failed ");Serial.print(res); }
   }
-  else {Serial.println("Data fifo Not Available");
+  else {Serial.println("Data fifo Not Available");}
   //Serial.println("address from C lib");Serial.print(mpu_get_addr());
-  }
+  
  
          if ( mpu2.fifoAvailable() )
         
@@ -478,11 +488,11 @@ if ( mpu.fifoAvailable() )
       float q1 = mpu2.calcQuat(mpu2.qx);
       float q2 = mpu2.calcQuat(mpu2.qy);
       float q3 = mpu2.calcQuat(mpu2.qz);
-      Serial.print("2w");Serial.print(q0);Serial.print("w");
-      Serial.print("2a");Serial.print(q1);Serial.print("a");
-      Serial.print("2b");Serial.print(q2);Serial.print("b");
-      Serial.print("2c");Serial.print(q3);Serial.println("c");
-      
+//      Serial.print("2w");Serial.print(q0);Serial.print("w");
+//      Serial.print("2a");Serial.print(q1);Serial.print("a");
+//      Serial.print("2b");Serial.print(q2);Serial.print("b");
+//      Serial.print("2c");Serial.print(q3);Serial.println("c");
+//      
 //    
     q.x = q1 ; q.y = q2 ; q.z = q3 ; q.w = q0; 
     sendData( acc,  gyr,   q, P[3]);
@@ -549,33 +559,33 @@ if ( mpu4.fifoAvailable() )
  // else {Serial.println("Data fifo Not Available mpu4");
   //Serial.println("address from C lib");Serial.print(mpu_get_addr());
  // }
-//////////////////////////////////////////
- tcaselect(4);
-    //// MPU5      
-if ( mpu5.fifoAvailable() )
-  {
-  //  Serial.println("address from C lib");Serial.print(mpu_get_addr());
-    // Use dmpUpdateFifo to update the ax, gx, mx, etc. values
-    int res = mpu3.dmpUpdateFifo();
-    if (res == INV_SUCCESS)
-    {
-          
-      float q0 = mpu5.calcQuat(mpu5.qw);
-      float q1 = mpu5.calcQuat(mpu5.qx);
-      float q2 = mpu5.calcQuat(mpu5.qy);
-      float q3 = mpu5.calcQuat(mpu5.qz);
-
-      
-    q.x = q1 ; q.y = q2 ; q.z = q3 ; q.w = q0; 
-   
-   sendData( acc,  gyr,   q, P[6]);
-
-    }
- //   else {Serial.println("Data INV_SUCCESS failed mpu5 ");}
-  }
- // else {Serial.println("Data fifo Not Available mpu5");
-  //}
-  //// MPU6   // adding sixth sensor, everything stopped with DMP channel
+////////////////////////////////////////////
+// tcaselect(4);
+//    //// MPU5      
+//if ( mpu5.fifoAvailable() )
+//  {
+//  //  Serial.println("address from C lib");Serial.print(mpu_get_addr());
+//    // Use dmpUpdateFifo to update the ax, gx, mx, etc. values
+//    int res = mpu5.dmpUpdateFifo();
+//    if (res == INV_SUCCESS)
+//    {
+//          
+//      float q0 = mpu5.calcQuat(mpu5.qw);
+//      float q1 = mpu5.calcQuat(mpu5.qx);
+//      float q2 = mpu5.calcQuat(mpu5.qy);
+//      float q3 = mpu5.calcQuat(mpu5.qz);
+//
+//      
+//    q.x = q1 ; q.y = q2 ; q.z = q3 ; q.w = q0; 
+//   
+//   sendData( acc,  gyr,   q, P[6]);
+//
+//    }
+// //   else {Serial.println("Data INV_SUCCESS failed mpu5 ");}
+//  }
+// // else {Serial.println("Data fifo Not Available mpu5");
+//  //}
+//  //// MPU6   // adding sixth sensor, everything stopped with DMP channel
 //if ( mpu6.fifoAvailable() )
 //  {
 //  //  Serial.println("address from C lib");Serial.print(mpu_get_addr());
@@ -598,7 +608,7 @@ if ( mpu5.fifoAvailable() )
 //  }
 // // else {Serial.println("Data fifo Not Available mpu6");
 //  //Serial.println("address from C lib");Serial.print(mpu_get_addr());
-//  }
+////  }
 ////
 //      
 //////////////////////////////////////////

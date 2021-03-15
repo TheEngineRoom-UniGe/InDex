@@ -9,7 +9,7 @@ UDP_IP = "130.251.13.113"#"192.168.43.94" #
 UDP_PORT = 2390
 debugPort = 2490;
 
-names = ["thumb_1","thumb_2","index_1","index_2","middle_finger_1","middle_finger_2","6","7","8","9","10","11","12","13","14","ring_finger_1","ring_finger_2","pinkie_1","pinkie_2","back","wrist","hand2"]
+names = ["thumb_1","thumb_2","index_1","index_2","middle_1","middle_2","6","7","8","9","10","11","12","13","14","ring_finger_1","ring_finger_2","pinkie_1","pinkie_2","back","wrist","hand2","cube"]
 #names = ["thumb_distal","thumb_meta","index_distal","index_meta","middle_distal","middle_meta","6","7","8","9","10","11","12","13","14","ring_distal","ring_meta","pinky_distal","pinky_meta","base","wrist"]
 
 x = [0, 0.5, 1, 1.5, 1, 1.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1.5, 1, 1.5, 0, -5]

@@ -20,10 +20,10 @@
 //
 //
 // ADC on 4D address 
-MPU9250_DMP mpu; 
+MPU9250_DMP mpu(0x68); 
 
-const char* ssid ="Vodafone-A61704731";// "EmaroLab-WiFi";
-const char* password = "2910Santiago@";//"walkingicub";
+const char* ssid = "EmaroLab-WiFi";
+const char* password = "walkingicub";
 IPAddress server (130, 251, 13, 113); //(192,168,43,94);//// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
@@ -104,7 +104,6 @@ class WiFiHardware {
     // do your initialization here. this probably includes TCP server/client setup
     client.connect(server, 11411);
 
-    
     
   }
 
@@ -222,7 +221,7 @@ void setup()
     }
     Wire.begin();
     i2cTest(); 
-    Wire.end(); 
+    //Wire.end(); 
     
     
     acc.x = 0;  acc.y = 0;  acc.z =0; gyr.x = 0;  gyr.y =0;  gyr.z = 0;
@@ -231,7 +230,7 @@ void setup()
 
     //Serial.println("I am Ready for I2C");
     //DEFAULT ADDRESS 0X68
-    if (mpu.begin(0x68) != INV_SUCCESS)
+    if (mpu.begin() != INV_SUCCESS)
   {
     while (1)
     {
@@ -252,13 +251,13 @@ void setup()
 }
 
 void loop()
-{
+{  // 170 hz single sensor
     digitalWrite(LED_BUILTIN, HIGH); 
     static uint32_t prev_ms = millis();
-    if ((millis() - prev_ms) > 20)
+    if ((millis() - prev_ms) > 10)
       {
         tcaselect(6);
-       // delay(5); // with 10, 20 ms , works fine , always updating ,visualised using teapot // 10 ms seems more stable (26fps with teapot)
+       // delay(5); // with 10, 20 ms , works fine , always updating ,visualised using teapot // 10 ms seems more stable (26fps with teapot)/ 8 sensors
           if ( mpu.fifoAvailable() )
   {
     // Use dmpUpdateFifo to update the ax, gx, mx, etc. values
@@ -286,13 +285,18 @@ void loop()
     //gyr.x = mpu.getGyro(0); gyr.y = mpu.getGyro(1); gyr.z = mpu.getGyro(2);
    sendData( acc,  gyr,   q, P[1]);
 
-
+ 
+  }
+}
+  else{
+    //Serial.println ("Fifo not available"); 
+    }
       
      // printIMUData();
     }
-  }
-}
-        
+   
+    else {
+    Serial.println ("update fifo failed");}      
         
  //       mpu.update();
        // mpu.printRawData();

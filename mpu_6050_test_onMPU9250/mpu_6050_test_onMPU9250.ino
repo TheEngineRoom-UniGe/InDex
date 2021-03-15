@@ -51,10 +51,10 @@ uint8_t fifoBuffer[64];
 
 const char* ssid = "EmaroLab-WiFi";
 const char* password = "walkingicub";
-IPAddress server (130, 251, 13, 195);//113); //(192,168,43,94);//// ip of your ROS server
+IPAddress server (130, 251, 13,195);//113);//(192,168,43,94);//// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
-const bool cubeFlag = true;//false;
+const bool cubeFlag = true;//false;//false;
 char a = 51;
 int8_t P[14] = {0,1,2,3,4,5,15,16,17,18,19,20,21,22};
 //names = ["thumb_1","thumb_2","index_1","index_2","middle_1","middle_2","6","7","8","9","10","11","12","13","14","ring_finger_1","ring_finger_2","pinkie_1","pinkie_2","back","wrist","hand2","cube"]
@@ -64,6 +64,7 @@ unsigned int localPort = 2390;
 WiFiClient clientDebug;
 unsigned int debugPort = 2490;
 WiFiUDP udpDebug; 
+bool onoff=true;
 
 // orientation/motion vars
 Quaternion q;           // [w, x, y, z]         quaternion container
@@ -131,7 +132,7 @@ void tcaselect(uint8_t i) {
 
 void setupWiFi()
 { 
-  bool onoff=true;
+  
   WiFi.begin(ssid, password);
   //Print to serial to find out IP address and debugging
   Serial.print("\nConnecting to "); Serial.println(ssid);
@@ -140,12 +141,13 @@ void setupWiFi()
   {
     delay(500);
     onoff=!onoff;
-    digitalWrite (LED_BUILTIN, onoff);
-    
-//    digitalWrite (D9, onoff);
+ //   digitalWrite (LED_BUILTIN, onoff);
+        digitalWrite (D9, onoff);
     Serial.print(".....");
 
   }
+   digitalWrite (D9, HIGH);
+   delay(500);
   if(i == 21){
     Serial.print("Could not connect to"); Serial.println(ssid);
     while(1) delay(500);
@@ -199,16 +201,24 @@ geometry_msgs::Vector3 gyr;
 
 
 void setup() {
-  setupWiFi();
-  int devStatus; 
   Serial.begin(115200);
+  pinMode(D9,OUTPUT);
+  digitalWrite(D9,HIGH);
+  //pinMode(LED_BUILTIN,OUTPUT); 
+  //digitalWrite(LED_BUILTIN,HIGH);
+  setupWiFi();
+  
+  int devStatus; 
+  
   Wire.begin();
   Wire.setClock(1000000);
-
+  // FIFO rate was set to 200 , by setting the divider to 0, means (200 / (0+1)); 
 for (int i = 6; i>0 ; i --)
     {
     tcaselect(i);
     Serial.print ("channel "); Serial.println (i);
+    onoff=!onoff;
+    digitalWrite(D9,onoff);
     i2cTest();
     }
     
@@ -218,21 +228,27 @@ for (int i = 0 ; i <num_imus ; i++)
   imu[i] = MPU6050(ADDRESSES[i%2]);
   
   imu[i].initialize();
-  Serial.println(imu[i].testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
-   imu[0].resetFIFO();
+  bool cnctd  = imu[i].testConnection();
+  Serial.println(cnctd ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
+   if (cnctd){
+   imu[0].resetFIFO(); 
+   }
+   
    devStatus= imu[i].dmpInitialize(); // stuck here when address is 0x69
 Serial.println ("MPU initialized");
 Serial.println(devStatus);
    if (devStatus == 0 ) 
     {
-  //imu[i].calcGyroOffsets(true);
-//    imu[i].setXGyroOffset(220);
-//    imu[i].setYGyroOffset(76);
-//    imu[i].setZGyroOffset(-85);
-//    imu[i].setZAccelOffset(1788); // 1688 factory default for my test chip
+//  imu[i].calcGyroOffsets(true);
+   // imu[i].setXGyroOffset(220);
+   // imu[i].setYGyroOffset(76);
+    //imu[i].setZGyroOffset(-85);
+   // imu[i].setXAccelOffset(-76); //0
+   // imu[i].setYAccelOffset(-2359); //0
+   // imu[i].setZAccelOffset(1688); // 1688 factory default for my test chip
 // 
-    imu[i].CalibrateAccel(6);
-    imu[i].CalibrateGyro(6);
+  imu[i].CalibrateAccel(32);
+  imu[i].CalibrateGyro(32);
     imu[i].PrintActiveOffsets();
     // turn on the DMP, now that it's ready
     Serial.println(F("Enabling DMP..."));
@@ -297,18 +313,20 @@ void loop() {
 
             // display quaternion values in easy matrix form: w x y z
             imu[i].dmpGetQuaternion(&q, fifoBuffer);
-            //Serial.print ("i ");  Serial.println (i);
-             Serial.print("w");Serial.print(q.w);Serial.print("w");
-            Serial.print("a");Serial.print(q.x);Serial.print("a");
-            Serial.print("b");Serial.print(q.y);Serial.print("b");
-            Serial.print("c");Serial.print(q.z);Serial.println("c");
-            if (cubeFlag) 
+//            //Serial.print ("i ");  Serial.println (i);
+//             Serial.print("w");Serial.print(q.w);Serial.print("w");
+//            Serial.print("a");Serial.print(q.x);Serial.print("a");
+//            Serial.print("b");Serial.print(q.y);Serial.print("b");
+//            Serial.print("c");Serial.print(q.z);Serial.println("c");
+      if (cubeFlag) 
             {
               sendData(acc,gyr,q,22); 
             }
             else {
             sendData( acc,  gyr,   q, P[i+2]);   
             }
+                 onoff = !onoff;
+            digitalWrite(D9,onoff);
             
     }
     }
