@@ -51,10 +51,10 @@ uint8_t fifoBuffer[64];
 
 const char* ssid = "EmaroLab-WiFi";
 const char* password = "walkingicub";
-IPAddress server (130, 251, 13,195);//113);//(192,168,43,94);//// ip of your ROS server
+IPAddress server (130, 251, 13,113);//113);//(192,168,43,94);//// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
-const bool cubeFlag = true;//false;//false;
+const bool cubeFlag = true;//false;
 char a = 51;
 int8_t P[14] = {0,1,2,3,4,5,15,16,17,18,19,20,21,22};
 //names = ["thumb_1","thumb_2","index_1","index_2","middle_1","middle_2","6","7","8","9","10","11","12","13","14","ring_finger_1","ring_finger_2","pinkie_1","pinkie_2","back","wrist","hand2","cube"]
