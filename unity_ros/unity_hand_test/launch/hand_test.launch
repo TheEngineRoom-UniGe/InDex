@@ -1,0 +1,4 @@
+<launch>
+	<rosparam file="$(find unity_hand_test)/config/params.yaml" command="load"/>
+	<node name="server_endpoint" pkg="unity_hand_test" type="server_endpoint.py" args="--wait" output="screen" respawn="true" />
+</launch>
