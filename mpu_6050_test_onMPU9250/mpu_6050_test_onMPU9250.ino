@@ -37,7 +37,7 @@ const uint8_t MPU_ADD0 = 0x68;
 const uint8_t MPU_ADD1 = 0x69; 
 const uint8_t ADDRESSES[2] = {MPU_ADD0 , MPU_ADD1};
 
-const int num_imus = 1; // 1 for the cube 
+const int num_imus = 8; // 1 for the cube 
 const float RADIANS_TO_DEGREES = 57.2958;
 const bool printFlag = true;
 
@@ -51,10 +51,10 @@ uint8_t fifoBuffer[64];
 
 const char* ssid = "EmaroLab-WiFi";
 const char* password = "walkingicub";
-IPAddress server (130, 251, 13,113);//113);//(192,168,43,94);//// ip of your ROS server
+IPAddress server (130, 251, 13,185);//113)//195;//(192,168,43,94);//// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
-const bool cubeFlag = true;//false;
+const bool cubeFlag =false;
 char a = 51;
 int8_t P[14] = {0,1,2,3,4,5,15,16,17,18,19,20,21,22};
 //names = ["thumb_1","thumb_2","index_1","index_2","middle_1","middle_2","6","7","8","9","10","11","12","13","14","ring_finger_1","ring_finger_2","pinkie_1","pinkie_2","back","wrist","hand2","cube"]
