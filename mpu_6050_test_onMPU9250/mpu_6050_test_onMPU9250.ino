@@ -51,7 +51,7 @@ uint8_t fifoBuffer[64];
 
 const char* ssid = "EmaroLab-WiFi";
 const char* password = "walkingicub";
-IPAddress server (130, 251, 13,185);//113)//195;//(192,168,43,94);//// ip of your ROS server
+IPAddress server (130, 251, 13,154);//113)//195;//(192,168,43,94);//// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
 const bool cubeFlag =false;
@@ -247,8 +247,9 @@ Serial.println(devStatus);
    // imu[i].setYAccelOffset(-2359); //0
    // imu[i].setZAccelOffset(1688); // 1688 factory default for my test chip
 // 
-  imu[i].CalibrateAccel(32);
-  imu[i].CalibrateGyro(32);
+    // the calibration is necessary 
+    imu[i].CalibrateAccel(7);//32
+    imu[i].CalibrateGyro(7);//32
     imu[i].PrintActiveOffsets();
     // turn on the DMP, now that it's ready
     Serial.println(F("Enabling DMP..."));

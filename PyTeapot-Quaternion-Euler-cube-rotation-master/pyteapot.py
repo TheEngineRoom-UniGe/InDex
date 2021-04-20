@@ -10,7 +10,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from pygame.locals import *
 import sys
-useSerial = True # set true for using serial for data transmission, false for wifi
+useSerial = False # set true for using serial for data transmission, false for wifi
 useQuat = True	   # set true for using quaternions, false for using y,p,r angles
 serialPortName='/dev/ttyUSB0' 
 yaw1 = 0
@@ -95,10 +95,10 @@ def cleanSerialBegin():
     if(useQuat):
         try:
             line = ser.readline().decode('UTF-8').replace('\n', '')
-            w = float(line.split('w')[1])
-            nx = float(line.split('a')[1])
-            ny = float(line.split('b')[1])
-            nz = float(line.split('c')[1])
+            w = float(line.split('w')[1]) #            w = float(line.split('w')[1])
+            nx = float(line.split('a')[1])#            nx = float(line.split('a')[1])
+            ny = float(line.split('b')[1])#            ny = float(line.split('b')[1])
+            nz = float(line.split('c')[1])#              nz = float(line.split('c')[1])# 
         except Exception:
             pass
     else:
