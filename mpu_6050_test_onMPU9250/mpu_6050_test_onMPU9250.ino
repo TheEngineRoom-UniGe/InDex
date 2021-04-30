@@ -1,5 +1,4 @@
-
-//#include <MPU6050.h>
+//#include <MPU6050.h>rate
 #include <I2Cdev.h>
 #include "MPU6050_9Axis_MotionApps41.h"
 #include <WiFi.h>
@@ -28,7 +27,6 @@ typedef union{
   byte binary[6];
 } binary3Int;
 
-int packetsize = 0 ;
 MPU6050 mpu6050(0x68);
 uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
 MPU6050 imu[12]; 
@@ -37,8 +35,8 @@ const uint8_t MPU_ADD0 = 0x68;
 const uint8_t MPU_ADD1 = 0x69; 
 const uint8_t ADDRESSES[2] = {MPU_ADD0 , MPU_ADD1};
 
-const int num_imus = 1; // 1 for the cube 
-const bool cubeFlag =true;
+const int num_imus = 8; // 1 for the cube 
+const bool cubeFlag =false;
 const float RADIANS_TO_DEGREES = 57.2958;
 const bool printFlag = true;
 
@@ -52,7 +50,7 @@ uint8_t fifoBuffer[64];
 
 const char* ssid = "EmaroLab-WiFi";
 const char* password = "walkingicub";
-IPAddress server (130, 251, 13,113);//113)//195;//(192,168,43,94);//// ip of your ROS server
+IPAddress server (130, 251, 13,158);//113)//195;//(192,168,43,94);//// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
 
@@ -68,11 +66,12 @@ WiFiUDP udpDebug;
 bool onoff=true;
 
 // orientation/motion vars
-Quaternion q;           // [w, x, y, z]         quaternion container
+//Quaternion q;           // [w, x, y, z]         quaternion container
 VectorInt16 aa;         // [x, y, z]            accel sensor measurements
 VectorInt16 aaReal;     // [x, y, z]            gravity-free accel sensor measurements
 VectorInt16 aaWorld;    // [x, y, z]            world-frame accel sensor measurements
 VectorFloat gravity;    // [x, y, z]            gravity vector
+VectorInt16 mag;
 float euler[3];         // [psi, theta, phi]    Euler angle container
 float ypr[3];           // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
 
@@ -213,7 +212,7 @@ void setup() {
   
   Wire.begin();
   Wire.setClock(1000000);
-  // FIFO rate was set to 200 , by setting the divider to 0, means (200 / (0+1)); 
+  // FIFO rate was set to 200 , by setting the divider(MPU6050_DMP_FIFO_RATE_DIVISOR) to 0, means (200 / (0+1)); 
 for (int i = 6; i>0 ; i --)
     {
     tcaselect(i);
@@ -232,7 +231,7 @@ for (int i = 0 ; i <num_imus ; i++)
   bool cnctd  = imu[i].testConnection();
   Serial.println(cnctd ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
    if (cnctd){
-   imu[0].resetFIFO(); 
+   imu[i].resetFIFO(); 
    }
    
    devStatus= imu[i].dmpInitialize(); // stuck here when address is 0x69
@@ -262,7 +261,7 @@ Serial.println(devStatus);
 //        Serial.print(digitalPinToInterrupt(INTERRUPT_PIN));
 //        Serial.println(F(")..."));
 //        attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), dmpDataReady, RISING);
-        mpuIntStatus = imu[i].getIntStatus();
+       // mpuIntStatus = imu[i].getIntStatus(); // TODO Interrupt
 
         // set our DMP Ready flag so the main loop() function knows it's okay to use it
         Serial.println(F("DMP ready!"));
@@ -285,7 +284,7 @@ Serial.println(devStatus);
 } 
 for (int i = 0;i <num_imus ;i ++)
     {
-    Serial.print ("DMP ready" ); 
+    Serial.print ("DMP ready " ); 
     Serial.print (i);
      Serial.print(dmpReady[i]);
     }
@@ -296,8 +295,7 @@ for (int i = 0;i <num_imus ;i ++)
 void loop() {
     acc.x = 0;  acc.y = 0;  acc.z =0; gyr.x = 0;  gyr.y =0;  gyr.z = 0;
   
-  
-  
+  Quaternion q;           // [w, x, y, z]         quaternion container // moved here to avoid sending readings of another sensor when not getting data
   // 100hz for a single sensor
  
       for (int i = 0;i <num_imus ;i++)
@@ -320,6 +318,15 @@ void loop() {
 //            Serial.print("a");Serial.print(q.x);Serial.print("a");
 //            Serial.print("b");Serial.print(q.y);Serial.print("b");
 //            Serial.print("c");Serial.print(q.z);Serial.println("c");
+
+          
+//// debugging see the whole buffer , mag does not exist in the DMP data buffer
+//          for (int k = 0 ; k < sizeof(fifoBuffer) ;k ++){
+//            Serial.print (",");Serial.print (fifoBuffer[k]);
+//          }
+          
+
+          
       if (cubeFlag) 
             {
               sendData(acc,gyr,q,22); 
@@ -335,165 +342,3 @@ void loop() {
 
  }
 }
-///// Logic done by Ale
-//
-//  fifoCount = mpu6050.getFIFOCount();
-//  Serial.print ("fifocount"); Serial.println(fifoCount);
-//      if (fifoCount == 1024)
-//        {
-//          mpu6050.resetFIFO();
-//          if(printFlag) Serial.println(F("FIFO overflow!"));
-//        }
-//      else
-//      {
-//       if (fifoCount % packetSize != 0) 
-//          {
-//            mpu6050.resetFIFO();
-//            if(printFlag) Serial.println(F("ERROR"));
-//          }
-//       else
-//       {
-//          while (fifoCount < packetSize) fifoCount = mpu6050.getFIFOCount();
-//            Serial.print ("getting fifoCount") ; 
-//            mpu6050.getFIFOBytes(fifoBuffer, packetSize);
-//  
-//            mpu6050.dmpGetAccel(accel, fifoBuffer);
-//            mpu6050.dmpGetGyro(gyro, fifoBuffer);
-//            mpu6050.dmpGetQuaternion(&q, fifoBuffer);
-//            mpu6050.dmpGetEuler(euler, &q);
-//            //mpu6050.dmpGetGravity(&gravity,&q);
-//            mpu6050.dmpGetYawPitchRoll(ypr,&q,&gravity); 
-//
-//          //  sendData(accel, gyro, &q, &P[i]);
-//            
-//            if(printFlag){
-//              Serial.println("accel");
-//              Serial.print(accel[0]);
-//              Serial.print(":");
-//              Serial.print(accel[1]);
-//              Serial.print(":");
-//              Serial.println(accel[2]);
-//    
-//              Serial.println("gyro");
-//              Serial.print(gyro[0]);
-//              Serial.print(":");
-//              Serial.print(gyro[1]);
-//              Serial.print(":");
-//              Serial.println(gyro[2]);
-//    
-//              Serial.println("ypr");
-//              Serial.print(ypr[2]*RADIANS_TO_DEGREES, 2);
-//              Serial.print(":");
-//              Serial.print(-ypr[1]*RADIANS_TO_DEGREES, 2);
-//              Serial.print(":");
-//              Serial.println(ypr[0]*RADIANS_TO_DEGREES, 2);
-//    
-//              Serial.println("euler");
-//              Serial.print(euler[0], 2);
-//              Serial.print(":");
-//              Serial.print(euler[1], 2);
-//              Serial.print(":");
-//              Serial.println(euler[2], 2);
-//              
-//              Serial.println("quaternion");
-//              Serial.print(q.x, 2);
-//              Serial.print(":");
-//              Serial.print(q.y, 2);
-//              Serial.print(":");
-//              Serial.print(q.z, 2);
-//              Serial.print(":");
-//              Serial.println(q.w, 2);
-//            }
-//            }
-
-
-//if (!dmpReady) return;
-    // read a packet from FIFO
-    //Serial.print("getcurrentPcket");Serial.println (mpu6050.GetCurrentFIFOPacket(fifoBuffer,packetSize));
-  
-    
-
- 
- 
-      //
-//
-//            // display Euler angles in degrees
-//            mpu6050.dmpGetQuaternion(&q, fifoBuffer);
-//            mpu6050.dmpGetEuler(euler, &q);
-//            Serial.print("euler\t");
-//            Serial.print(euler[0] * 180/M_PI);
-//            Serial.print("\t");
-//            Serial.print(euler[1] * 180/M_PI);
-//            Serial.print("\t");
-//            Serial.println(euler[2] * 180/M_PI);
-//
-//
-//
-//            // display Euler angles in degrees
-//            mpu6050.dmpGetQuaternion(&q, fifoBuffer);
-//            mpu6050.dmpGetGravity(&gravity, &q);
-//            mpu6050.dmpGetYawPitchRoll(ypr, &q, &gravity);
-//            Serial.print("ypr\t");
-//            Serial.print(ypr[0] * 180/M_PI);
-//            Serial.print("\t");
-//            Serial.print(ypr[1] * 180/M_PI);
-//            Serial.print("\t");
-//            Serial.println(ypr[2] * 180/M_PI);
-//
-//
-//            // display real acceleration, adjusted to remove gravity
-//            mpu6050.dmpGetQuaternion(&q, fifoBuffer);
-//            mpu6050.dmpGetAccel(&aa, fifoBuffer);
-//            mpu6050.dmpGetGravity(&gravity, &q);
-//            mpu6050.dmpGetLinearAccel(&aaReal, &aa, &gravity);
-//            Serial.print("areal\t");
-//            Serial.print(aaReal.x);
-//            Serial.print("\t");
-//            Serial.print(aaReal.y);
-//            Serial.print("\t");
-//            Serial.println(aaReal.z);
-//
-//
-//
-//            // display initial world-frame acceleration, adjusted to remove gravity
-//            // and rotated based on known orientation from quaternion
-//            mpu6050.dmpGetQuaternion(&q, fifoBuffer);
-//            mpu6050.dmpGetAccel(&aa, fifoBuffer);
-//            mpu6050.dmpGetGravity(&gravity, &q);
-//            mpu6050.dmpGetLinearAccel(&aaReal, &aa, &gravity);
-//            mpu6050.dmpGetLinearAccelInWorld(&aaWorld, &aaReal, &q);
-//            Serial.print("aworld\t");
-//            Serial.print(aaWorld.x);
-//            Serial.print("\t");
-//            Serial.print(aaWorld.y);
-//            Serial.print("\t");
-//            Serial.println(aaWorld.z);
-//
-//    
-//        #ifdef OUTPUT_TEAPOT
-//            // display quaternion values in InvenSense Teapot demo format:
-//            teapotPacket[2] = fifoBuffer[0];
-//            teapotPacket[3] = fifoBuffer[1];
-//            teapotPacket[4] = fifoBuffer[4];
-//            teapotPacket[5] = fifoBuffer[5];
-//            teapotPacket[6] = fifoBuffer[8];
-//            teapotPacket[7] = fifoBuffer[9];
-//            teapotPacket[8] = fifoBuffer[12];
-//            teapotPacket[9] = fifoBuffer[13];
-//            Serial.write(teapotPacket, 14);
-//            teapotPacket[11]++; // packetCount, loops at 0xFF on purpose
-//        #endif
-
-        // blink LED to indicate activity
-   //     blinkState = !blinkState;
-    //    digitalWrite(LED_PIN, blinkState);
- //   }
- 
-  //mpu6050.update();
-//  Serial.print("angleX : ");
-//  Serial.print(mpu6050.getAngleX());
-//  Serial.print("\tangleY : ");
-//  Serial.print(mpu6050.getAngleY());
-//  Serial.print("\tangleZ : ");
-//  Serial.println(mpu6050.getAngleZ());
-//}

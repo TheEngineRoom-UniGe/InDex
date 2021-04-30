@@ -45,7 +45,7 @@ THE SOFTWARE.
  */
 
 #ifndef BUFFER_LENGTH 
-    #define BUFFER_LENGTH 32 
+    #define BUFFER_LENGTH 32  
 #endif
 MPU6050::MPU6050(uint8_t address):devAddr(address) {
 }
@@ -2754,26 +2754,36 @@ void MPU6050::getFIFOBytes(uint8_t *data, uint8_t length) {
  *         2) when recovering from overflow
  *         0) when no valid data is available
  * ================================================================ */
- int8_t MPU6050::GetCurrentFIFOPacket(uint8_t *data, uint8_t length) { // overflow proof
+ int8_t MPU6050::GetCurrentFIFOPacket   (uint8_t *data, uint8_t length) { // overflow proof
      int16_t fifoC;
      // This section of code is for when we allowed more than 1 packet to be acquired
      uint32_t BreakTimer = micros();
      do {
-         if ((fifoC = getFIFOCount())  > length) {
-
-             if (fifoC > 200) { // if you waited to get the FIFO buffer to > 200 bytes it will take longer to get the last packet in the FIFO Buffer than it will take to  reset the buffer and wait for the next to arrive
+         //         if ((fifoC = getFIFOCount())  > length) {
+         fifoC = getFIFOCount(); 
+         if (fifoC   > length) { // InDex sending packet as 48
+            // Serial.println("(fifoC = "+ (String)fifoC +"  > length)  " + (String)length);
+             if (fifoC > 510) { // if you waited to get the FIFO buffer to > 200 bytes it will take longer to get the last packet in the FIFO Buffer than it will take to  reset the buffer and wait for the next to arrive
                  resetFIFO(); // Fixes any overflow corruption
                  fifoC = 0;
+//                 Serial.println( "Buffer overflow ");
+/// bad condition below 
                  while (!(fifoC = getFIFOCount()) && ((micros() - BreakTimer) <= (11000))); // Get Next New Packet
+                 
                  } else { //We have more than 1 packet but less than 200 bytes of data in the FIFO Buffer
+                 Serial.println (" fifocount < length" );
                  uint8_t Trash[BUFFER_LENGTH];
-                 while ((fifoC = getFIFOCount()) > length) {  // Test each time just in case the MPU is writing to the FIFO Buffer
+                 //fifoC = getFIFOCount();
+                 //while (fifoC >length)
+                 while ((fifoC = getFIFOCount())  > length) {  // Test each time just in case the MPU is writing to the FIFO Buffer
                      fifoC = fifoC - length; // Save the last packet
                      uint16_t  RemoveBytes;
                      while (fifoC) { // fifo count will reach zero so this is safe
                          RemoveBytes = min((int)fifoC, BUFFER_LENGTH); // Buffer Length is different than the packet length this will efficiently clear the buffer
                          getFIFOBytes(Trash, (uint8_t)RemoveBytes);
                          fifoC -= RemoveBytes;
+                        Serial.println( "removing bytes " +(String)RemoveBytes );
+
                      }
                  }
              }
@@ -2783,6 +2793,8 @@ void MPU6050::getFIFOBytes(uint8_t *data, uint8_t length) {
          if ((micros() - BreakTimer) > (11000)) return 0;
      } while (fifoC != length);
      getFIFOBytes(data, length); //Get 1 packet
+     //cout << "get fifo bytes , length " << length << endl;
+     //Serial.print ("get fifo bytes") ; 
      return 1;
 }
 

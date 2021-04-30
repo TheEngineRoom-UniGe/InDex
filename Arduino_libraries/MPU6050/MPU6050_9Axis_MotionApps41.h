@@ -264,7 +264,7 @@ const unsigned char dmpMemory[MPU6050_DMP_CODE_SIZE] PROGMEM = {
 };
 
 #ifndef MPU6050_DMP_FIFO_RATE_DIVISOR 
-#define MPU6050_DMP_FIFO_RATE_DIVISOR 0x00// was 0x03 // TODO
+#define MPU6050_DMP_FIFO_RATE_DIVISOR 0x02//  was 0x03 // TODO InDex
 #endif
 
 const unsigned char dmpConfig[MPU6050_DMP_CONFIG_SIZE] PROGMEM = {
@@ -771,6 +771,15 @@ uint8_t MPU6050::dmpGetMag(int16_t *data, const uint8_t* packet) {
     data[0] = (packet[28] << 8) | packet[29];
     data[1] = (packet[30] << 8) | packet[31];
     data[2] = (packet[32] << 8) | packet[33];
+    return 0;
+}
+uint8_t MPU6050::dmpGetMag(VectorInt16 *v, const uint8_t* packet) {
+    
+    if (packet == 0) packet = dmpPacketBuffer;
+    v -> x = (packet[28] << 8) | packet[29];
+    v -> y = (packet[30] << 8) | packet[31];
+    v -> z = (packet[32] << 8) | packet[33];
+    
     return 0;
 }
 // uint8_t MPU6050::dmpSetLinearAccelFilterCoefficient(float coef);
