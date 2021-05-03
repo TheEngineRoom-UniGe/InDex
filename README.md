@@ -40,6 +40,7 @@ In case you had a problem while uploading the sketch, related to a missing seria
 $pip install pyserial
 
 You may need to add read and write permissions to the new port on Linux , depending on the name of the new port
+
 $chmod a+rw /dev/ttyUSBx 
 
 
