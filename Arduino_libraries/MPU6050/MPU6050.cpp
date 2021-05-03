@@ -2764,14 +2764,16 @@ void MPU6050::getFIFOBytes(uint8_t *data, uint8_t length) {
          if (fifoC   > length) { // InDex sending packet as 48
             // Serial.println("(fifoC = "+ (String)fifoC +"  > length)  " + (String)length);
              if (fifoC > 510) { // if you waited to get the FIFO buffer to > 200 bytes it will take longer to get the last packet in the FIFO Buffer than it will take to  reset the buffer and wait for the next to arrive
+                 Serial.println("Buffer overflow");
                  resetFIFO(); // Fixes any overflow corruption
                  fifoC = 0;
+
 //                 Serial.println( "Buffer overflow ");
 /// bad condition below 
                  while (!(fifoC = getFIFOCount()) && ((micros() - BreakTimer) <= (11000))); // Get Next New Packet
                  
                  } else { //We have more than 1 packet but less than 200 bytes of data in the FIFO Buffer
-                 Serial.println (" fifocount < length" );
+                // Serial.println (" fifocount < length" );
                  uint8_t Trash[BUFFER_LENGTH];
                  //fifoC = getFIFOCount();
                  //while (fifoC >length)
@@ -2782,7 +2784,7 @@ void MPU6050::getFIFOBytes(uint8_t *data, uint8_t length) {
                          RemoveBytes = min((int)fifoC, BUFFER_LENGTH); // Buffer Length is different than the packet length this will efficiently clear the buffer
                          getFIFOBytes(Trash, (uint8_t)RemoveBytes);
                          fifoC -= RemoveBytes;
-                        Serial.println( "removing bytes " +(String)RemoveBytes );
+                        //Serial.println( "removing bytes " +(String)RemoveBytes );
 
                      }
                  }

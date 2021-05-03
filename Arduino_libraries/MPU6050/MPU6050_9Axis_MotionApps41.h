@@ -264,7 +264,7 @@ const unsigned char dmpMemory[MPU6050_DMP_CODE_SIZE] PROGMEM = {
 };
 
 #ifndef MPU6050_DMP_FIFO_RATE_DIVISOR 
-#define MPU6050_DMP_FIFO_RATE_DIVISOR 0x02//  was 0x03 // TODO InDex
+#define MPU6050_DMP_FIFO_RATE_DIVISOR 0x03//  was 0x03 // TODO InDex
 #endif
 
 const unsigned char dmpConfig[MPU6050_DMP_CONFIG_SIZE] PROGMEM = {
