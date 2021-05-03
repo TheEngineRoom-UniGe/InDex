@@ -1,5 +1,6 @@
 # InDex_Glove
 //Codes Related to InDex Project Glove
+
 These codes are used to connect the ESP32 main board to a ROS server, by publishing ROS topics of the connected sensors, via WiFi
 
 The code is an arduino code. 
@@ -48,6 +49,7 @@ The MPU9250 9 axis IMU library, is based on:
 https://github.com/hideakitai/MPU9250 
 
 The MPU6050 library is based on : 
+https://github.com/jrowberg/i2cdevlib/tree/develop/Arduino/MPU6050
 
 
 
