@@ -50,7 +50,7 @@ uint8_t fifoBuffer[64];
 
 const char* ssid = "EmaroLab-WiFi";
 const char* password = "walkingicub";
-IPAddress server (130, 251, 13,158);//113)//195;//(192,168,43,94);//// ip of your ROS server
+IPAddress server (130, 251, 13,107);//113)//195;//(192,168,43,94);//// ip of your ROS server
 IPAddress ip;  
 int status = WL_IDLE_STATUS;
 
