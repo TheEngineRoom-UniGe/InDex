@@ -45,7 +45,6 @@ You may need to add read and write permissions to the new port on Linux , depend
 
 
 
-
 The MPU9250 9 axis IMU library, is based on:
 https://github.com/hideakitai/MPU9250 
 
@@ -55,4 +54,10 @@ https://github.com/jrowberg/i2cdevlib/tree/develop/Arduino/MPU6050
 
 
 
+
+**************************************************************
+                   ROS Side Arduino Bridge
+**************************************************************
+Data sent through WiFi to a host, is parsed and then publish as Robotic Operating System (ROS) topic. 
+The file responsible of this is : arduino_bridge.py
 
